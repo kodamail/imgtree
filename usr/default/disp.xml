@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<disp_list>
+
+<disp type="default" size="20" loop="each">
+  <button inc="-1">&lt;</button>
+  <menu></menu>
+  <button inc="+1">&gt;</button>
+</disp>
+
+</disp_list>

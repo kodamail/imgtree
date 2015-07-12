@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<type_list>
+
+<type name="ftype">
+  <desc>image type</desc>
+  <value name="latlon">
+    <running>Lat-Lon</running>
+    <desc>Latitude-longitude cross-section</desc>
+  </value>
+  <value name="latlev">
+    <running>Lat-Lev</running>
+    <desc>Latitude-level cross-section</desc>
+  </value>
+</type>
+
+<type name="mode">
+  <desc>diagnosis</desc>
+  <value name="model_bias">
+    <running>Model bias</running>
+    <desc>Model bias compared with observation</desc>
+  </value>
+  <value name="sens_model_bias">
+    <running>Model bias sens.</running>
+    <desc>Sensitivity of model bias to model configuration(s) compared with observation</desc>
+  </value>
+  <value name="sens_model">
+    <running>Model sens.</running>
+    <desc>Sensitivity of model values to model cofiguration(s)</desc>
+  </value>
+</type>
+
+<type name="run">
+  <desc>data source</desc>
+  <!-- observation -->
+  <value name="GPCP">
+    <running>GPCP</running>
+    <desc></desc>
+  </value>
+  <value name="CMAP">
+    <running>CMAP</running>
+    <desc></desc>
+  </value>
+  <!-- NICAM -->
+  <value name="AMIP.N12.197806.gl09.L38.run01"></value>
+  <value name="K.200406.N12.gl09.b"></value>
+  <value name="K.200406.N12.gl09.b001"></value>
+  <value name="K.200406.N12.gl09.b002"></value>
+  <value name="K.200406.N12.gl09.b003"></value>
+  <value name="K.200406.N12.gl09.b004"></value>
+  <value name="K.200406.N12.gl09.b005"></value>
+  <!-- other models -->
+</type>
+
+<type name="varid">
+  <desc>variable</desc>
+  <value name="t2m">
+    <running>T2m</running>
+    <desc>2m air temperature</desc>
+  </value>
+  <value name="t">
+    <running>T</running>
+    <desc>Air temperature</desc>
+  </value>
+  <value name="u">
+    <running>U</running>
+    <desc>Zonal wind</desc>
+  </value>
+  <value name="v">
+    <running>V</running>
+    <desc>Meridional wind</desc>
+  </value>
+  <value name="precip">
+    <running>Precip</running>
+    <desc>Precipitation</desc>
+  </value>
+  <value name="lw_up_toa">
+    <running>TOA upward LW (OLR)</running>
+    <desc>Outgoing longwave radiation at TOA</desc>
+  </value>
+  <value name="lw_up_clr_toa">
+    <running>TOA clear-sky upward LW</running>
+    <desc>Outgoing longwave radiation at TOA (clear-sky)</desc>
+  </value>
+  <value name="lw_crf_toa">
+    <running>TOA LW cloud radiative forcing</running>
+    <desc>Outgoing longwave radiation at TOA</desc>
+  </value>
+  <value name="sw_down_toa">
+    <running>TOA downward SW</running>
+    <desc>Outgoing shortwave radiation at TOA</desc>
+  </value>
+  <value name="sw_up_toa">
+    <running>TOA upward SW (OSR)</running>
+    <desc>Outgoing shortwave radiation at TOA</desc>
+  </value>
+  <value name="sw_up_clr_toa">
+    <running>TOA clear-sky upward SW</running>
+    <desc>Outgoing longwave radiation at TOA (clear-sky)</desc>
+  </value>
+  <value name="sw_crf_toa">
+    <running>TOA SW cloud radiative forcing</running>
+    <desc>Outgoing shortwave radiation at TOA</desc>
+  </value>
+  <value name="sw_net_toa">
+    <running>TOA net SW</running>
+    <desc>Net shortwave radiation at TOA (downward positive)</desc>
+  </value>
+  <value name="aw_net_toa">
+    <running>TOA net LW+SW</running>
+    <desc>Net longwave and shortwave radiation at TOA (downward positive)</desc>
+  </value>
+  <value name="lw_down_sfc">
+    <running>SFC downward LW</running>
+    <desc>Downward longwave radiation at surface</desc>
+  </value>
+  <value name="lw_up_sfc">
+    <running>SFC upward LW</running>
+    <desc>Upward longwave radiation at surface</desc>
+  </value>
+  <value name="lw_net_sfc">
+    <running>SFC net LW</running>
+    <desc>Net longwave radiation at surface (downward positive)</desc>
+  </value>
+  <value name="sw_down_sfc">
+    <running>SFC downward SW</running>
+    <desc>Downward shortwave radiation at surface</desc>
+  </value>
+  <value name="sw_up_sfc">
+    <running>SFC upward SW</running>
+    <desc>Upward shortwave radiation at surface</desc>
+  </value>
+  <value name="sw_net_sfc">
+    <running>SFC net SW</running>
+    <desc>Net shortwave radiation at surface (downward positive)</desc>
+  </value>
+</type>
+
+<type name="timeid">
+  <desc>time</desc>
+  <value name="clim_annual_mean">
+    <running>Clim-annual-mean</running>
+    <desc>Climatological mean annual mean</desc>
+  </value>
+  <value name="clim_seasonal_mean">
+    <running>Clim-seasonal-mean</running>
+    <desc>Climatological mean seasonal mean</desc>
+  </value>
+  <value name="clim_monthly_mean">
+    <running>Clim-monthly-mean</running>
+    <desc>Climatological mean monthly mean</desc>
+  </value>
+  <value name="annual_mean">
+    <running>Annual-mean</running>
+    <desc>Annual mean</desc>
+  </value>
+  <value name="seasonal_mean">
+    <running>Seasonal-mean</running>
+    <desc>Seasonal mean</desc>
+  </value>
+  <value name="monthly_mean">
+    <running>Monthly-mean</running>
+    <desc>Monthly mean</desc>
+  </value>
+</type>
+
+<type name="season">
+  <desc>season</desc>
+  <value name="MAM">
+    <running>MAM</running>
+    <desc>March-April-May</desc>
+  </value>
+  <value name="JJA">
+    <running>JJA</running>
+    <desc>June-July-August</desc>
+  </value>
+  <value name="SON">
+    <running>SON</running>
+    <desc>September-October-November</desc>
+  </value>
+  <value name="DJF">
+    <running>DJF</running>
+    <desc>December-January-February</desc>
+  </value>
+</type>
+
+</type_list>

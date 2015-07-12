@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<disp_list>
+<!-- sample for NICAM -->
+
+<disp type="default" size="20" loop="each">
+  <button inc="-1">&lt;</button>
+  <menu></menu>
+  <button inc="+1">&gt;</button>
+</disp>
+
+<disp type="run-1/run-2" size="50" loop="each">
+  <button type="run-1" inc="-1">&lt;</button>
+  <menu type="run-1"></menu>
+  <button type="run-1" inc="1">&gt;</button>
+  <button type="run-2" inc="-1">&lt;</button>
+  <menu type="run-2"></menu>
+  <button type="run-2" inc="1">&gt;</button>
+</disp>
+
+<disp type="year/season" size="50" loop="ingroup">
+  <button type="year"   inc="-1">y-1</button>
+  <button type="season" inc="-1">s-1</button>
+  <menu type="year"></menu>
+  <menu type="season"></menu>
+  <button type="season" inc="+1">s+1</button>
+  <button type="year"   inc="+1">y+1</button>
+</disp>
+
+<disp type="year/month" size="50" loop="ingroup">
+  <button type="year"  inc="-1">y-1</button>
+  <button type="month" inc="-1">m-1</button>
+  <menu type="year"></menu>
+  <menu type="month"></menu>
+  <button type="month" inc="+1">m+1</button>
+  <button type="year"  inc="+1">y+1</button>
+</disp>
+
+<disp type="year" size="20">
+  <button inc="-1">y-1</button>
+  <menu></menu>
+  <button inc="+1">y+1</button>
+</disp>
+
+<disp type="season" size="20">
+  <button inc="-1">s-1</button>
+  <menu></menu>
+  <button inc="+1">s+1</button>
+</disp>
+
+<disp type="month" size="15">
+  <button inc="-1">m-1</button>
+  <menu></menu>
+  <button inc="+1">m+1</button>
+</disp>
+
+</disp_list>
