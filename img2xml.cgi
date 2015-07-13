@@ -128,8 +128,10 @@ $img_dir =~ s|/$||; # delete "/" in the end of line
 #----- load image file list
 #
 #my @img_files = `find $img_dir/ -type f -follow -regex ".*\.\(png\|gif\)" | sed -e "s|^$img_dir/||"`;  # relative to $img_dir
-my $find_src = '     -type f -follow -name "*.png"';
-$find_src   .= ' -or -type f -follow -name "*.gif"';
+my $find_src = '   -type f -follow -name "*.png"';
+$find_src .= ' -or -type f -follow -name "*.bmp"';
+$find_src .= ' -or -type f -follow -name "*.gif"';
+$find_src .= ' -or -type f -follow -name "*.jpg"';
 my @img_files = `find $img_dir/ ${find_src} | sed -e "s|^$img_dir/||"`;  # relative to $img_dir
 @img_files = sort { $a cmp $b } @img_files;
 #@img_files = sort ( sort_test @img_files );
