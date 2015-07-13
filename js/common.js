@@ -209,7 +209,8 @@ function init()
 //                if( $(this).attr("name") == path_prev[path[c].length] || ( sync[c] == 1 && $(this).attr("name") == path[0][c] )  )
                 {
                     path[c][path[c].length]             = $(this).attr("name");
-                    child_type[c][child_type[c].length] = $(this).attr("child_type");
+                    if( $(this).attr("child_type") != "" ){ child_type[c][child_type[c].length] = $(this).attr("child_type"); }
+                    else                                  { child_type[c][child_type[c].length] = "none_" + child_type[c].length; }
                     flag = 1;
                     init_path( $(this) );
                     return false;
@@ -234,7 +235,8 @@ function init()
                         if( $(this).attr("name") == $attr )
                         {
                             path[c][path[c].length]             = $(this).attr("name");
-                            child_type[c][child_type[c].length] = $(this).attr("child_type");
+                            if( $(this).attr("child_type") != "" ){ child_type[c][child_type[c].length] = $(this).attr("child_type"); }
+                            else                                  { child_type[c][child_type[c].length] = "none_" + child_type[c].length; }
                             init_path( $(this) );
                             flag = 1;
                             return false; // just one time
@@ -251,7 +253,8 @@ function init()
                 target.children("dir").each( function() // loop ONLY for the first element
                 {
                     path[c][path[c].length]                 = $(this).attr("name");
-                    child_type[c][child_type[c].length]     = $(this).attr("child_type");
+                    if( $(this).attr("child_type") != "" ){ child_type[c][child_type[c].length] = $(this).attr("child_type"); }
+                    else                                  { child_type[c][child_type[c].length] = "none_" + child_type[c].length; }
                     init_path( $(this) );
                     return false; // just one time
                 });
