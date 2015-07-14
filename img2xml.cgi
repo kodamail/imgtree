@@ -37,6 +37,9 @@ for my $line (@js)
 
 $opt{xml_filename} = $opt{img_dir} . '/../list.xml';
 
+$opt{xml_filename} =~ s|[^/]+/\.\./||g;
+
+
 #$opt{nodesc} = 1;  # for debug
 
 # TODO: introduce option (-h?) to switch belows
