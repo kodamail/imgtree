@@ -25,6 +25,7 @@ if( typeof(xml_type_list_filename) == "undefined" )
 if( typeof(xml_disp_list_filename) == "undefined" )
   var xml_disp_list_filename  = img_dir + '/disp.xml';
 //  var xml_disp_list_filename  = img_dir + 'usr/disp.xml';
+xml_tree_filename = xml_tree_filename.replace( /[^\/]+\/\.\.\//g, "" );
 
 // default menu size in [0-100]
 var size_default = 20;
@@ -109,8 +110,9 @@ function init()
             dataType : 'xml',
             timeout  : 100000,
             success  : setXmlDispList,
-            error    : (function(){ $("#head_message").html( 'error: failed to open xml file (' + xml_disp_list_filename + ')' ); })
+            error    : (function(){ $("#head_message").html( 'error: failed to open xml_disp_list (' + xml_disp_list_filename + ')' ); })
         });
+        console.log( "loading xml_disp_list (" + xml_disp_list_filename + ")" );
         function setXmlDispList( xml, status )
         {
             console.log( "xml_disp_list is loaded." );
@@ -127,11 +129,12 @@ function init()
             dataType : 'xml',
             timeout  : 100000,
             success  : setxmlTypeList,
-            error    : (function(){ $("#head_message").html( 'error: failed to open xml file (' + xml_type_list_filename + ')' ); })
+            error    : (function(){ $("#head_message").html( 'error: failed to open xml_type_list (' + xml_type_list_filename + ')' ); })
         });
+        console.log( "loading xml_type_list (" + xml_type_list_filename + ")" );
         function setxmlTypeList( xml, status )
         {
-            console.log( "type.xml is loaded." );
+            console.log( "xml_type_list is loaded." );
             xmlTypeList = xml;
             init4();
         }
@@ -152,11 +155,12 @@ function init()
             dataType : 'xml',
             timeout  : 100000,
             success  : setXmlTree,
-            error    : (function(){ $("#head_message").html( 'error: failed to open xml file (' + xml_tree_filename + ')' ); })
+            error    : (function(){ $("#head_message").html( 'error: failed to open xml_tree (' + xml_tree_filename + ')' ); })
         });
+        console.log( "loading xml_tree (" + xml_tree_filename + ")" );
         function setXmlTree( xml, status )
         {
-            console.log( "xmlTree is loaded." );
+            console.log( "xml_tree is loaded." );
             xmlTree = xml;
             //
             // xml -> path
