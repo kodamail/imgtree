@@ -3,9 +3,9 @@
 <!-- sample for NICAM -->
 
 <disp type="default" size="20" loop="each">
-  <button inc="-1">&lt;</button>
+<!--  <button inc="-1">&lt;</button> -->
   <menu></menu>
-  <button inc="+1">&gt;</button>
+<!--  <button inc="+1">&gt;</button> -->
 </disp>
 
 <disp type="run-1/run-2" size="50" loop="each">
@@ -15,6 +15,12 @@
   <button type="run-2" inc="-1">&lt;</button>
   <menu type="run-2"></menu>
   <button type="run-2" inc="1">&gt;</button>
+</disp>
+
+<disp type="varid" size="20" loop="group">
+  <button inc="-1">&lt;</button>
+  <menu></menu>
+  <button inc="+1">&gt;</button>
 </disp>
 
 <disp type="year/season" size="50" loop="ingroup">

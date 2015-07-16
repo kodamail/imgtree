@@ -11,6 +11,14 @@
     <running>Lat-Lev</running>
     <desc>Latitude-level cross-section</desc>
   </value>
+  <value name="latzm">
+    <running>ZM Lat</running>
+    <desc>Zonal mean latitudinal plot</desc>
+  </value>
+  <value name="isccp_matrix">
+    <running>ISCCP matrix</running>
+    <desc>ISCCP matrix</desc>
+  </value>
 </type>
 
 <type name="mode">
@@ -40,6 +48,38 @@
     <running>CMAP</running>
     <desc></desc>
   </value>
+  <value name="GSMaP_TMI">
+    <running>GSMaP_TMI</running>
+    <desc></desc>
+  </value>
+  <value name="JRA55">
+    <running>JRA55</running>
+    <desc></desc>
+  </value>
+  <value name="ERA_INTERIM">
+    <running>ERA-Interim</running>
+    <desc></desc>
+  </value>
+  <value name="NCEP1">
+    <running>NCEP/NCAR</running>
+    <desc></desc>
+  </value>
+  <value name="NCEP2">
+    <running>NCEP/DOE</running>
+    <desc></desc>
+  </value>
+  <value name="SRB3.0">
+    <running>SRB3.0</running>
+    <desc></desc>
+  </value>
+  <value name="ISCCP_D1_OBS">
+    <running>ISCCP(D1)</running>
+    <desc></desc>
+  </value>
+  <value name="OISST_v2">
+    <running>OISST(v2)</running>
+    <desc></desc>
+  </value>
   <!-- NICAM -->
   <value name="AMIP.N12.197806.gl09.L38.run01"></value>
   <value name="K.200406.N12.gl09.b"></value>
@@ -53,6 +93,10 @@
 
 <type name="varid">
   <desc>variable</desc>
+  <value name="precip">
+    <running>Precip</running>
+    <desc>Precipitation</desc>
+  </value>
   <value name="t2m">
     <running>T2m</running>
     <desc>2m air temperature</desc>
@@ -68,10 +112,6 @@
   <value name="v">
     <running>V</running>
     <desc>Meridional wind</desc>
-  </value>
-  <value name="precip">
-    <running>Precip</running>
-    <desc>Precipitation</desc>
   </value>
   <value name="lw_up_toa">
     <running>TOA upward LW (OLR)</running>
