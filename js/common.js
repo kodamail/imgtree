@@ -82,6 +82,44 @@ function init()
 //    // path_running[c][n]: running title for path[c][n]
 //    var path_running = []; path_running[0] = [];
     //
+
+
+    // set initial value (from url)
+    var path_init;
+    var args = location.href.split( "?" );
+    arg = new Array();
+    if( 1 in args )
+    {
+        arg = args[1].split( "&" );
+    }
+    for( var depth=0; depth<=arg.length-1; depth++ )
+    {
+        var temp = arg[depth].split( "=" );
+        var key = temp[0];
+        if( 1 in temp ){ value = temp[1]; }
+        else{ value = ""; }
+//        console.log( key + " : " + value );
+        if( key == "path" )
+        {
+            path_init = [];
+            path_list = value.split( "," );
+            for( var c=0; c<path_list.length; c++ )
+            {
+                path_init[c] = path_list[c].split( "/" );
+//                console.log( c + " : " + path_init[c][0] );
+            }
+        }
+    }
+
+/*
+        var href = "index.html?nc=" + path.length;
+        for( var c=0; c<path.length; c++ )
+        {
+            href += "&path0=" + path[c][0]
+            for( var i=1; i<path[c].length; i++ ){ href += "/" + path[c][i]; }
+        }
+*/
+
 /*
     // TODO
     // 属性毎（現状では深さ毎）にfix/sync/指定無しを設定できるようにする？
@@ -169,6 +207,16 @@ function init()
             // path -> show
             path2panels();
             //
+            if( path_init != undefined )
+            {
+                for( var c=1; c<path_init.length; c++ )
+                {
+                    addCon();
+                    xml2path( { c:c, depth:0 } );
+                    path2panels();
+                }
+            }
+            //
             // register evenst
             registerStaticEvents()
         }
@@ -196,10 +244,19 @@ function init()
 //        console.log("name: " + name );
 //        var menu_name = path2menu();
 
-
         // keep old path tp path_prev[].
         var path_prev = [];
         for( var i=0; i<path[c].length; i++ ){ path_prev[i] = path[c][i]; }
+
+        // load initial path when
+        if( path_init != undefined )
+        {
+            if( path_init[c] != undefined )
+            {
+                for( var i=0; i<path_init[c].length; i++ ){ path_prev[i] = path_init[c][i]; }
+                path_init[c].length = 0;
+            }
+        }
         //
         // recursive function to create path
         //   target: xml child-object
@@ -217,6 +274,7 @@ function init()
                     else                                  { child_type[c][child_type[c].length] = "none_" + child_type[c].length; }
                     flag = 1;
                     init_path( $(this) );
+//console.log( "test1: " + path[c][path[c].length-1] + " <- " + child_type[c][child_type[c].length-1] );
                     return false;
                 }
             });
@@ -593,6 +651,16 @@ function init()
             $("#controller_form-" + c).append( '<input id="conpp-' + cpp + '" class="conpp" type="button" value="panel++">' );
 
         }
+        
+        // set link for re-load
+        var href = "index.html?path=";
+        for( var c=0; c<path.length; c++ )
+        {
+            if( c > 0 ){ href += ","; }
+            href += path[c][0]
+            for( var i=1; i<path[c].length; i++ ){ href += "/" + path[c][i]; }
+        }
+        document.getElementById( "a_reload" ).href = href;
 
         draw();  // draw images according to the path
         registerDynamicEvents();  // re-register events
@@ -682,19 +750,21 @@ function init()
         path2panels();
     }
 
+    
+    function addCon()
+    {
+        path[path.length]             = [];
+        fnames[fnames.length]         = [];
+        child_type[child_type.length] = [];
+        zoom_fnames[path.length-1]    = 1;
+    }
+
     function onAddCon()
     {
         var c_add = parseInt( $(this).attr("id").split("-")[1] );  // conpp-c
         var c, i;
-//        console.log( "con: " + c_add);
-//        path[path.length]             = new Array();
-//        fnames[fnames.length]         = new Array();
-//        child_type[child_type.length] = new Array();
-        path[path.length]                 = [];
-        fnames[fnames.length]             = [];
-//        size_fnames[size_fnames.length]   = [];
-        child_type[child_type.length]     = [];
-//        path_running[path_running.length] = [];
+
+        addCon();
 
         // move
         for( c=path.length-2; c>=c_add; c--)
@@ -707,26 +777,15 @@ function init()
             {
                 fnames[c+1][i] = fnames[c][i];
             }
-/*            for( i=0; i<size_fnames[c].length; i++ )
-            {
-                size_fnames[c+1][i] = size_fnames[c][i];
-            }*/
             zoom_fnames[c+1] = zoom_fnames[c];
             for( i=0; i<child_type[c].length; i++ )
             {
                 child_type[c+1][i] = child_type[c][i];
             }
-//            for( i=0; i<path_running[c].length; i++ )
-//            {
-//                path_running[c+1][i] = path_running[c][i];
-//            }
         }
-
         path[c_add].length         = 0;
         fnames[c_add].length       = 0;
-//        size_fnames[c_add].length  = 0;
         child_type[c_add].length   = 0;
-//        path_running[c_add].length = 0;
 
         // copy
         for( i=0; i<path[c_add-1].length; i++ )
@@ -737,20 +796,11 @@ function init()
         {
             fnames[c_add][i] = fnames[c_add-1][i];
         }
-/*        for( i=0; i<size_fnames[c_add-1].length; i++ )
-        {
-            size_fnames[c_add][i] = size_fnames[c_add-1][i];
-        }*/
         zoom_fnames[c_add] = zoom_fnames[c_add-1];
         for( i=0; i<child_type[c_add-1].length; i++ )
         {
             child_type[c_add][i] = child_type[c_add-1][i];
         }
-//        for( i=0; i<path_running[c_add-1].length; i++ )
-//        {
-//            path_running[c_add][i] = path_running[c_add-1][i];
-//        }
-
         path2panels();
     }
 
