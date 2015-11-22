@@ -204,18 +204,17 @@ function init()
             // xml -> path
             xml2path( { c:0, depth:0 } ); // c=0, initial
             //
-            // path -> show
-            path2panels();
-            //
             if( path_init != undefined )
             {
                 for( var c=1; c<path_init.length; c++ )
                 {
                     addCon();
                     xml2path( { c:c, depth:0 } );
-                    path2panels();
                 }
             }
+            //
+            // path -> show
+            path2panels();
             //
             // register evenst
             registerStaticEvents()
@@ -453,203 +452,27 @@ function init()
     // xml, path, fnames -> html
     //
     //---------------------------------------------------//
-    function path2panels()
+    function path2panels( initFlag )
     {
-        var i, j, k, c;
-        var ope;
-//        var id;
-        var target;
-        var obj_tmp;
-        var disp;
-        var type_default = 0;
-
+        var c;
         //
-        obj_tmp = path2menu();
+        var obj_tmp = path2menu();
         var menu_name    = obj_tmp.menu_name;
-        var menu_running = obj_tmp.menu_running;
-        var menu_desc    = obj_tmp.menu_desc;
-//        var menu_name = path2menu().menu_name;
+//        var menu_running = obj_tmp.menu_running;
+//        var menu_desc    = obj_tmp.menu_desc;
+        if( initFlag == undefined ){ initFlag = 1; }
 
         // TODO: delete inappropriate menu for "flag_sync=1"
 
         // put menu to html
         //
-        $("#panel_div").html( '' ); // clear main panel
+        if( initFlag == 1 ){ $("#panel_div").html( '' ); } // clear main panel
         //
         // for each controller
         for( c=0; c<=menu_name.length-1; c++ )
         {
-            var cpp = c + 1; // pointer to next controller
-            var len = child_type[c].length;
-
-            // set up panel for controller c
-            $("#panel_div").append( '<div id="panel_div-' + c + '"></div>' );
-
-            // add form and drawing field to the controller c's panel
-            $("#panel_div-" + c).html( '<form class="controller" id="controller_form-' + c + '" action="#"></form>' );
-            $("#panel_div-" + c).append( '<div id="draw_txt-' + c + '"></div>' );
-
-            // clear form in a controller c (refresh cache)
-            $("#controller_form-" + c).html( '' );
-
-            // create hash table
-            // to obtain i from child_type[c][i-1] (i.e. obtain index from type)
-            var i_type = {};
-            for( i=1; i<=menu_name[c].length-1; i++ ) // for each menu
-            {
-                i_type[child_type[c][i-1]] = i;
-            }
-
-            var id_num = 1;
-            var size_now = 0; // unit in %
-            i = 1;
-            // considering group of types in disp_list.xml (such as year/month), dual-loop is placed for each type
-            // from longest possible group of types to single type
-            while( i <= menu_name[c].length - 1 ) // 1st loop for each menu
-            {
-                for( k=len-1; k>=i; k-- ) // 2nd for each menu: if k=i, group has only one type.
-                {
-                    var types_target = child_type[c].slice(i-1,k).join("/"); // slice [i-1:k) such as "year" "year/month" etc.
-                    disp = $(xmlDispList).children("disp_list").first().children("disp").filter("[ type = '" + types_target + "' ]");
-//                    var disp = $(xmlDispList).children("disp_list").first().children("disp").filter("[ type = '" + types_target + "' ]" || "[ type = 'default' ]");
-                    type_default = 0;
-                    //
-                    // internal function
-                    // menu
-                    function type_menu( i )
-                    {
-                        // get title from xml
-                        var attr_head = child_type[c][i-1].split("-")[0]; // e.g. run-1 -> run
-                        var tmp = $(xmlTypeList).children("type_list").children("type").filter("[ name |= '" + attr_head + "' ]");
-                        var title = "";
-//                        tmp.children("description").each(function()
-                        tmp.children("description,desc").each(function()
-                        {
-                            title = $(this).text();
-                            return false; // just one time
-                        });
-                        //
-                        var id = 'select-' + c + '-' + i;
-                        $("#controller_form-" + c).append( '<select id="' + id + '" class="xmlTree" title="' + title + '"></select>' );
-                        opt = document.getElementById( id ).options;
-                        opt.length = 0;
-                        for( j=0; j<=menu_name[c][i].length-1; j++ )
-                        {
-                            opt.length++;
-                            opt[opt.length-1].value = menu_name[c][i][j];
-                            opt[opt.length-1].text  = menu_running[c][i][j];
-                            opt[opt.length-1].title = menu_desc[c][i][j]; // tooltip
-                            if( menu_name[c][i][j] == path[c][i] )
-                            { opt[opt.length-1].selected = true; }
-                        }
-                    }
-
-                    function type_button( attr_type, text, inc, group_type, loop )
-                    {
-                        var id = 'form-' + c + '-' + id_num;
-                        id_num++;
-                        $("#controller_form-" + c).append( '<input id="' + id + '" class="shift" type="button" value="' + text + '">' );
-                        $("#" + id).bind( "click", 
-                            {
-                                c   : c,
-                                i   : i_type[attr_type],    // target type for button
-                                inc : inc,
-                                type: group_type,    // type(s) for a group
-                                loop: loop
-                            },
-                            onShiftMenu 
-                        );
-                    }
-
-                    // insert/don't insert "<br>" by checking size
-                    function insertEnterBySize()
-                    {
-                        var size = disp.attr("size");
-                        if( size == undefined ){ size = size_default; }
-                        size_now += Number( size );
-                        if( size_now > 100 )
-                        {
-                            $("#controller_form-" + c).append( '<br>' );
-                            size_now = Number( size );
-                        }
-                    }
-                    //
-                    // if <disp type="default"> exists
-                    if( typeof disp.attr("type") === "undefined" && k == i )
-                    {
-                        disp = $(xmlDispList).children("disp_list").first().children("disp").filter("[ type = 'default' ]");
-                        if( typeof disp.attr("type") !== "undefined" )
-                        {
-                            disp.attr( "type", child_type[c][i-1] );
-                            type_default = 1;
-                        }
-                    }
-
-                    // default appearance for single type (not specified in disp_list.xml)
-                    if( typeof disp.attr("type") === "undefined" && k == i )
-                    {
-                        insertEnterBySize();
-                        type_button( child_type[c][i-1], "&lt;", -1, child_type[c][i-1], "no" );
-                        type_menu( i );
-                        type_button( child_type[c][i-1], "&gt;", +1, child_type[c][i-1], "no" );
-                    }
-                    //
-                    // specified in disp_list.xml
-                    else if( typeof disp.attr("type") !== "undefined" )
-                    {
-                        insertEnterBySize();
-                        disp.children("*").each(function() // for all <button>, <menu>
-                        {
-                            // $(this): from <button>, <menu>
-                            // disp   : from <disp>
-                            var nothing_to_do = 1;
-                            //
-                            var attr_type = disp.attr("type");
-                            if( typeof $(this).attr("type") !== "undefined" ){ attr_type = $(this).attr("type"); }
-                            //
-                            if( $(this)[0].tagName === "button" ) // <button>
-                            {
-                                type_button( attr_type, $(this).text(), $(this).attr("inc"), disp.attr("type"), disp.attr("loop") );
-                                nothing_to_do = 0;
-                            }
-                            //
-                            else if( $(this)[0].tagName === "menu" ) // <menu>
-                            {
-                                type_menu( i_type[attr_type] );
-                                nothing_to_do = 0;
-                            }
-                            //
-                            if( nothing_to_do == 1 )
-                            {
-                                console.log( "warning: below is ignored" );
-                                console.log( "  -> " + $(this)[0].tagName + " : " + $(this).attr("func") + " : " + $(this).text() );
-                            }
-                        });
-                        i = k;
-                        if( type_default == 1 ){ disp.attr( "type", "default" ); type_default = 0; }
-                        break;
-                    }
-                    else{ /*console.log("skip");*/ }
-                }
-                i = i + 1;
-            }
-
-            // size button
-            $("#controller_form-" + c).append( '<br>' );
-            $("#controller_form-" + c).append( '<input id="sizemm-' + c + '" class="sizemm" type="button" value="size--">' );
-            $("#controller_form-" + c).append( '<input id="sizepp-' + c + '" class="sizepp" type="button" value="size++">' );
-
-            // add "+" and "-" buttons for a form
-            if( path.length > 1 )
-            {
-                $("#controller_form-" + c).append( '<input id="conmm-' + c + '" class="conmm" type="button" value="panel--">' );
-            }
-            else // disabled button
-            {
-                $("#controller_form-" + c).append( '<input id="conmm-' + c + '" class="conmm" type="button" value="panel--" disabled>' );
-            }
-            $("#controller_form-" + c).append( '<input id="conpp-' + cpp + '" class="conpp" type="button" value="panel++">' );
-
+            if( initFlag == 1 ){ initPanel( c ); }
+            createPanel( obj_tmp, c );
         }
         
         // set link for re-load
@@ -664,6 +487,196 @@ function init()
 
         draw();  // draw images according to the path
         registerDynamicEvents();  // re-register events
+    }
+
+    function initPanel( c )
+    {
+        $("#panel_div").append( '<div id="panel_div-' + c + '"></div>' );
+//            $("#panel_div").append( '<div id="panel_div-' + c + '" style="position: relative; left: 83px; top: -3px;"></div>' );
+//            $("#panel_div").append( '<div id="panel_div-' + c + '" style="position: absolute; left: 83px; top: -3px;"></div>' );
+        $(function() // make it draggable
+        {
+            $( "#panel_div-" + c ).draggable();
+        });
+    }
+
+    // create one panel
+    // assume panel itself already exists (i.e., initPanel is already performed).
+    function createPanel( path2menuObj, c )
+    {
+        var menu_name    = path2menuObj.menu_name;
+        var menu_running = path2menuObj.menu_running;
+        var menu_desc    = path2menuObj.menu_desc;
+        var cpp = c + 1; // pointer to next controller
+        var len = child_type[c].length;
+        var type_default = 0;
+        var i, j, k;
+        var disp;
+
+        // add form and drawing field to the controller c's panel
+        $("#panel_div-" + c).html( '<form class="controller" id="controller_form-' + c + '" action="#"></form>' );
+        $("#panel_div-" + c).append( '<div id="draw_txt-' + c + '"></div>' );
+
+        // clear form in a controller c (refresh cache)
+        $("#controller_form-" + c).html( '' );
+
+        // create hash table
+        // to obtain i from child_type[c][i-1] (i.e. obtain index from type)
+        var i_type = {};
+        for( i=1; i<=menu_name[c].length-1; i++ ) // for each menu
+        {
+            i_type[child_type[c][i-1]] = i;
+        }
+
+        var id_num = 1;
+        var size_now = 0; // unit in %
+        i = 1;
+        // considering group of types in disp_list.xml (such as year/month), dual-loop is placed for each type
+        // from longest possible group of types to single type
+        while( i <= menu_name[c].length - 1 ) // 1st loop for each menu
+        {
+            for( k=len-1; k>=i; k-- ) // 2nd for each menu: if k=i, group has only one type.
+            {
+                var types_target = child_type[c].slice(i-1,k).join("/"); // slice [i-1:k) such as "year" "year/month" etc.
+                disp = $(xmlDispList).children("disp_list").first().children("disp").filter("[ type = '" + types_target + "' ]");
+//                    var disp = $(xmlDispList).children("disp_list").first().children("disp").filter("[ type = '" + types_target + "' ]" || "[ type = 'default' ]");
+                type_default = 0;
+                //
+                // internal function
+                // menu
+                function type_menu( i )
+                {
+                    // get title from xml
+                    var attr_head = child_type[c][i-1].split("-")[0]; // e.g. run-1 -> run
+                    var tmp = $(xmlTypeList).children("type_list").children("type").filter("[ name |= '" + attr_head + "' ]");
+                    var title = "";
+//                        tmp.children("description").each(function()
+                    tmp.children("description,desc").each(function()
+                    {
+                        title = $(this).text();
+                        return false; // just one time
+                    });
+                    //
+                    var id = 'select-' + c + '-' + i;
+                    $("#controller_form-" + c).append( '<select id="' + id + '" class="xmlTree" title="' + title + '"></select>' );
+                    opt = document.getElementById( id ).options;
+                    opt.length = 0;
+                    for( j=0; j<=menu_name[c][i].length-1; j++ )
+                    {
+                        opt.length++;
+                        opt[opt.length-1].value = menu_name[c][i][j];
+                        opt[opt.length-1].text  = menu_running[c][i][j];
+                        opt[opt.length-1].title = menu_desc[c][i][j]; // tooltip
+                        if( menu_name[c][i][j] == path[c][i] )
+                        { opt[opt.length-1].selected = true; }
+                    }
+                }
+
+                function type_button( attr_type, text, inc, group_type, loop )
+                {
+                    var id = 'form-' + c + '-' + id_num;
+                    id_num++;
+                    $("#controller_form-" + c).append( '<input id="' + id + '" class="shift" type="button" value="' + text + '">' );
+                    $("#" + id).bind( "click", 
+                        {
+                            c   : c,
+                            i   : i_type[attr_type],    // target type for button
+                            inc : inc,
+                            type: group_type,    // type(s) for a group
+                            loop: loop
+                        },
+                        onShiftMenu 
+                    );
+                }
+
+                // insert/don't insert "<br>" by checking size
+                function insertEnterBySize()
+                {
+                    var size = disp.attr("size");
+                    if( size == undefined ){ size = size_default; }
+                    size_now += Number( size );
+                    if( size_now > 100 )
+                    {
+                        $("#controller_form-" + c).append( '<br>' );
+                        size_now = Number( size );
+                    }
+                }
+                //
+                // if <disp type="default"> exists
+                if( typeof disp.attr("type") === "undefined" && k == i )
+                {
+                    disp = $(xmlDispList).children("disp_list").first().children("disp").filter("[ type = 'default' ]");
+                    if( typeof disp.attr("type") !== "undefined" )
+                    {
+                        disp.attr( "type", child_type[c][i-1] );
+                        type_default = 1;
+                    }
+                }
+
+                // default appearance for single type (not specified in disp_list.xml)
+                if( typeof disp.attr("type") === "undefined" && k == i )
+                {
+                    insertEnterBySize();
+                    type_button( child_type[c][i-1], "&lt;", -1, child_type[c][i-1], "no" );
+                    type_menu( i );
+                    type_button( child_type[c][i-1], "&gt;", +1, child_type[c][i-1], "no" );
+                }
+                //
+                // specified in disp_list.xml
+                else if( typeof disp.attr("type") !== "undefined" )
+                {
+                    insertEnterBySize();
+                    disp.children("*").each(function() // for all <button>, <menu>
+                    {
+                        // $(this): from <button>, <menu>
+                        // disp   : from <disp>
+                        var nothing_to_do = 1;
+                        //
+                        var attr_type = disp.attr("type");
+                        if( typeof $(this).attr("type") !== "undefined" ){ attr_type = $(this).attr("type"); }
+                        //
+                        if( $(this)[0].tagName === "button" ) // <button>
+                        {
+                            type_button( attr_type, $(this).text(), $(this).attr("inc"), disp.attr("type"), disp.attr("loop") );
+                            nothing_to_do = 0;
+                        }
+                        //
+                        else if( $(this)[0].tagName === "menu" ) // <menu>
+                        {
+                            type_menu( i_type[attr_type] );
+                            nothing_to_do = 0;
+                        }
+                        //
+                        if( nothing_to_do == 1 )
+                        {
+                            console.log( "warning: below is ignored" );
+                            console.log( "  -> " + $(this)[0].tagName + " : " + $(this).attr("func") + " : " + $(this).text() );
+                        }
+                    });
+                    i = k;
+                    if( type_default == 1 ){ disp.attr( "type", "default" ); type_default = 0; }
+                    break;
+                }
+                else{ /*console.log("skip");*/ }
+            }
+            i = i + 1;
+        }
+
+        // size button
+        $("#controller_form-" + c).append( '<br>' );
+        $("#controller_form-" + c).append( '<input id="sizemm-' + c + '" class="sizemm" type="button" value="size--">' );
+        $("#controller_form-" + c).append( '<input id="sizepp-' + c + '" class="sizepp" type="button" value="size++">' );
+
+        // add "+" and "-" buttons for a form
+        if( path.length > 1 )
+        {
+            $("#controller_form-" + c).append( '<input id="conmm-' + c + '" class="conmm" type="button" value="panel--">' );
+        }
+        else // disabled button
+        {
+            $("#controller_form-" + c).append( '<input id="conmm-' + c + '" class="conmm" type="button" value="panel--" disabled>' );
+        }
+        $("#controller_form-" + c).append( '<input id="conpp-' + cpp + '" class="conpp" type="button" value="panel++">' );
     }
 
 
@@ -747,23 +760,27 @@ function init()
         var changeId = $(this).attr("id").split("-");  // select-c-i
 //        xml2path( changeId[1], changeId[2], mySelect );
         xml2path( { c: changeId[1], depth: changeId[2], name: mySelect } );
-        path2panels();
+//        path2panels();
+        path2panels(0);
     }
 
     
     function addCon()
     {
-        path[path.length]             = [];
-        fnames[fnames.length]         = [];
-        child_type[child_type.length] = [];
-        zoom_fnames[path.length-1]    = 1;
+        c = path.length;
+        path[c]        = [];
+        fnames[c]      = [];
+        child_type[c]  = [];
+        zoom_fnames[c] = 1;
+//        $("#panel_div").append( '<div id="panel_div-' + c + '"></div>' );
+        initPanel( c );
     }
 
     function onAddCon()
     {
         var c_add = parseInt( $(this).attr("id").split("-")[1] );  // conpp-c
         var c, i;
-
+        var str, rep;
         addCon();
 
         // move
@@ -782,6 +799,30 @@ function init()
             {
                 child_type[c+1][i] = child_type[c][i];
             }
+/*
+            str = $("#panel_div-" + c).html();
+            rep = "(id=\"[^-]+-)" + c;
+            str = str.replace( new RegExp(rep, 'gi'), "$1" + (c+1) );
+            $("#panel_div-" + (c+1)).html( str );
+*/
+//            $("#panel_div-" + (c+1)).html( $("#panel_div-" + c).html() );
+//            console.log( "after: " + str);
+//            var str_prev = "";
+//            console.log( "before: " + str);
+//            while( str != str_prev ){ str_prev = str; str.replace( "controller_form-" + c, "controller_form-" + (c+1) ); }
+//            while( str != str_prev ){ str_prev = str; str.replace( "form-" + c, "form-" + (c+1) ); }
+//            while( str != str_prev ){ str_prev = str; str.replace( "select-" + c, "select-" + (c+1) ); }
+//            str.replace( /id=\"[^-]+-/, "" );
+//            var rep = "id=\"[^-]+-" + c;
+//            var rep = "id";
+//            str.replace( new RegExp(rep, 'gi'), "$1" + (c+1) );
+//            str.replace( new RegExp(rep, 'gi'), "HIT" );
+//            console.log( "rep: " + rep);
+//            console.log( "This is id=\"frema-1.".replace(new RegExp(rep, 'gi'), "HIT") );
+//            console.log( str.replace(new RegExp(rep, 'gi'), "$1" + (c+1)) );
+//            str.replace( new RegExp(rep, 'gi'), "$1" + (c+1) )
+            //str = str.replace( new RegExp(rep, 'gi'), "$1" + (c+1) );
+//            $("#panel_div-" + (c+1)).html( $("#panel_div-" + c).html() );
         }
         path[c_add].length         = 0;
         fnames[c_add].length       = 0;
@@ -801,7 +842,26 @@ function init()
         {
             child_type[c_add][i] = child_type[c_add-1][i];
         }
-        path2panels();
+
+        // TODO: just create one controller
+/*
+        str = $("#panel_div-" + (c_add-1)).html();
+        rep = "(id=\"[^-]+-)" + (c_add-1);
+        str = str.replace( new RegExp(rep, 'gi'), "$1" + (c_add) );
+        $("#panel_div-" + (c_add)).html( str );
+*/
+//        path2panels();
+        path2panels(0);
+
+/*
+        var obj_tmp = path2menu();
+        var menu_name    = obj_tmp.menu_name;
+        for( c=0; c<=menu_name.length-1; c++ )
+        {
+            createPanel( obj_tmp, c );
+        }
+*/
+
     }
 
     function onDelCon()
@@ -842,7 +902,10 @@ function init()
         child_type.length   = child_type.length - 1
 //        path_running.length = path_running.length - 1;
 
-        path2panels();
+        var parent = document.getElementById('panel_div');
+        parent.removeChild( document.getElementById('panel_div-' + (path.length)) );
+        path2panels(0);
+//        path2panels();
     }
 
 
@@ -946,7 +1009,8 @@ function init()
             if( inc != 0 ){ shiftMenu( d, inc ); }
         }
         shiftMenu( 0, inc );
-        path2panels();
+//        path2panels();
+        path2panels(0);
 
     }
 
