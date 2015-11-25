@@ -30,6 +30,8 @@ xml_tree_filename = xml_tree_filename.replace( /[^\/]+\/\.\.\//g, "" );
 // default menu size in [0-100]
 var size_default = 20;
 
+var panel_width_default = 50;  // in %
+
 
 //---------------------------------------------------------------------------//
 //
@@ -82,43 +84,37 @@ function init()
 //    // path_running[c][n]: running title for path[c][n]
 //    var path_running = []; path_running[0] = [];
     //
-
+    var panel_clientWidth_init = 0;
+    var panel_offsetWidth_init = 0;
 
     // set initial value (from url)
     var path_init;
-    var args = location.href.split( "?" );
-    arg = new Array();
-    if( 1 in args )
+    (function()
     {
-        arg = args[1].split( "&" );
-    }
-    for( var depth=0; depth<=arg.length-1; depth++ )
-    {
-        var temp = arg[depth].split( "=" );
-        var key = temp[0];
-        if( 1 in temp ){ value = temp[1]; }
-        else{ value = ""; }
-//        console.log( key + " : " + value );
-        if( key == "path" )
+        var args = location.href.split( "?" );
+        arg = new Array();
+        if( 1 in args )
         {
-            path_init = [];
-            path_list = value.split( "," );
-            for( var c=0; c<path_list.length; c++ )
+            arg = args[1].split( "&" );
+        }
+        for( var depth=0; depth<=arg.length-1; depth++ )
+        {
+            var temp = arg[depth].split( "=" );
+            var key = temp[0];
+            if( 1 in temp ){ value = temp[1]; }
+            else{ value = ""; }
+            if( key == "path" )
             {
-                path_init[c] = path_list[c].split( "/" );
-//                console.log( c + " : " + path_init[c][0] );
+                path_init = [];
+                path_list = value.split( "," );
+                for( var c=0; c<path_list.length; c++ )
+                {
+                    path_init[c] = path_list[c].split( "/" );
+                }
             }
         }
-    }
+    })();
 
-/*
-        var href = "index.html?nc=" + path.length;
-        for( var c=0; c<path.length; c++ )
-        {
-            href += "&path0=" + path[c][0]
-            for( var i=1; i<path[c].length; i++ ){ href += "/" + path[c][i]; }
-        }
-*/
 
 /*
     // TODO
@@ -491,7 +487,32 @@ function init()
 
     function initPanel( c )
     {
-        $("#panel_div").append( '<div id="panel_div-' + c + '"></div>' );
+//        $("#panel_div").append( '<div id="panel_div-' + c + '" style="border-style: solid;"></div>' );
+//        $("#panel_div").append( '<div id="panel_div-' + c + '" style="border-style: solid; width: 50%"></div>' );
+        $("#panel_div").append( '<div id="panel_div-' + c + '" style="border-style: solid;"></div>' );
+        document.getElementById( 'panel_div-' + c ).style.setProperty( "width", panel_width_default + '%' );
+
+//        document.getElementById( 'panel_div-' + c ).style.setProperty( "width", panel_width_default );
+
+        if( c == 0 )
+        {
+            panel_clientWidth_init = document.getElementById( 'panel_div-' + c ).clientWidth;
+            panel_offsetWidth_init = document.getElementById( 'panel_div-' + c ).offsetWidth;
+//console.log(panel_clientWidth_init);
+//console.log(panel_offsetWidth_init);
+//var element = document.getElementById( 'panel_div-' + c );
+//var document_obj = element.ownerDocument;
+//var window_obj = document_obj.defaultView;
+//console.log(window_obj.getComputedStyle(element));
+//console.log(window_obj.getComputedStyle(element).width); // この時点では大きさが定まっていない！
+//console.log(element.style.width); // この時点では大きさが定まっていない！
+        }
+
+
+//        $("#panel_div").append( '<div id="panel_div-' + c + '" style="border-style: solid; width: 1000px; height: 800px; padding: 0.5em;"></div>' );
+//  #resizable { width: 150px; height: 150px; padding: 0.5em; }
+
+
 //            $("#panel_div").append( '<div id="panel_div-' + c + '" style="position: relative; left: 83px; top: -3px;"></div>' );
 //            $("#panel_div").append( '<div id="panel_div-' + c + '" style="position: absolute; left: 83px; top: -3px;"></div>' );
         $(function() // make it draggable
@@ -711,18 +732,18 @@ function init()
                     $("#draw_txt-" + c).append( i + ": " + file + ", <br>" );
                 }
                 var id = "img-" + c + "-" + i;
-                $("#draw_txt-" + c).append( '<img id="' + id + '" src="./' + file + '">' );
-
+                $("#draw_txt-" + c).append( '<img id="' + id + '" src="./' + file + '" style="visibility: hidden;">' );
+//                var panel_width = panel_width_default * zoom_fnames[c];
                 $("#"+id).one( "load", function () // width can be obtained after loading
                 {
                     var changeId = $(this).attr("id").split("-");  // select-c-i
                     var c = changeId[1];
                     var i = changeId[2];
                     var id = "img-" + c + "-" + i;
-                    document[id].width = document[id].naturalWidth * zoom_fnames[c];
+//                    document[id].width = document[id].naturalWidth * zoom_fnames[c];
+                    document[id].width = document.getElementById( 'panel_div-' + c ).clientWidth;
+                    document[id].style.setProperty( "visibility", "visible" );
                 });
-//                if( size_fnames[c][i] < 0 ){ size_fnames[c][i] = document[id].width; }
-//                else{ document[id].width = size_fnames[c][i]; }
                
             }
         }
@@ -914,10 +935,13 @@ function init()
         var c = parseInt( $(this).attr("id").split("-")[1] );
         var id_parent = "img-" + c;
         zoom_fnames[c] += 0.125;
+        var panel_width = panel_width_default * zoom_fnames[c];
+        document.getElementById( 'panel_div-' + c ).style.setProperty( "width", panel_width + "%" );
         for( var i=0; i<fnames[c].length; i++ )
         {
             var id = id_parent + "-" + i
-            document[id].width = document[id].naturalWidth * zoom_fnames[c];
+//            document[id].width = document[id].naturalWidth * zoom_fnames[c];
+            document[id].width = document.getElementById( 'panel_div-' + c ).clientWidth;
         }
     }
     function onReduceSize()
@@ -925,10 +949,13 @@ function init()
         var c = parseInt( $(this).attr("id").split("-")[1] );
         var id_parent = "img-" + c;
         zoom_fnames[c] -= 0.125;
+        var panel_width = panel_width_default * zoom_fnames[c];
+        document.getElementById( 'panel_div-' + c ).style.setProperty( "width", panel_width + "%" );
         for( var i=0; i<fnames[c].length; i++ )
         {
             var id = id_parent + "-" + i
-            document[id].width = document[id].naturalWidth * zoom_fnames[c];
+//            document[id].width = document[id].naturalWidth * zoom_fnames[c];
+            document[id].width = document.getElementById( 'panel_div-' + c ).clientWidth;
         }
     }
 
