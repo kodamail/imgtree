@@ -30,7 +30,7 @@ xml_tree_filename = xml_tree_filename.replace( /[^\/]+\/\.\.\//g, "" );
 // default menu size in [0-100]
 var size_default = 20;
 
-var panel_width_default = 50;  // in %
+var panel_width_default = 48;  // in %
 
 
 //---------------------------------------------------------------------------//
@@ -448,15 +448,17 @@ function init()
     // xml, path, fnames -> html
     //
     //---------------------------------------------------//
-    function path2panels( initFlag )
+    function path2panels( initFlag, c )
     {
-        var c;
+//        var cmin, cmax;
         //
         var obj_tmp = path2menu();
         var menu_name    = obj_tmp.menu_name;
-//        var menu_running = obj_tmp.menu_running;
-//        var menu_desc    = obj_tmp.menu_desc;
         if( initFlag == undefined ){ initFlag = 1; }
+
+        var cmin = 0;
+        var cmax = menu_name.length-1;
+        if( c != undefined ){ cmin = c; cmax = c; }
 
         // TODO: delete inappropriate menu for "flag_sync=1"
 
@@ -465,7 +467,8 @@ function init()
         if( initFlag == 1 ){ $("#panel_div").html( '' ); } // clear main panel
         //
         // for each controller
-        for( c=0; c<=menu_name.length-1; c++ )
+//        for( c=0; c<=menu_name.length-1; c++ )
+        for( c=cmin; c<=cmax; c++ )
         {
             if( initFlag == 1 ){ initPanel( c ); }
             createPanel( obj_tmp, c );
@@ -481,7 +484,8 @@ function init()
         }
         document.getElementById( "a_reload" ).href = href;
 
-        draw();  // draw images according to the path
+        if( cmin == cmax ){ draw(cmin); }
+        else{ draw(); }
         registerDynamicEvents();  // re-register events
     }
 
@@ -494,6 +498,7 @@ function init()
 
 //        document.getElementById( 'panel_div-' + c ).style.setProperty( "width", panel_width_default );
 
+/*
         if( c == 0 )
         {
             panel_clientWidth_init = document.getElementById( 'panel_div-' + c ).clientWidth;
@@ -507,7 +512,7 @@ function init()
 //console.log(window_obj.getComputedStyle(element).width); // この時点では大きさが定まっていない！
 //console.log(element.style.width); // この時点では大きさが定まっていない！
         }
-
+*/
 
 //        $("#panel_div").append( '<div id="panel_div-' + c + '" style="border-style: solid; width: 1000px; height: 800px; padding: 0.5em;"></div>' );
 //  #resizable { width: 150px; height: 150px; padding: 0.5em; }
@@ -706,11 +711,14 @@ function init()
     // update images following current path and fnames.
     //
     //---------------------------------------------------//
-    function draw()
+    function draw( c )
     {
+        var cmin = 0;
+        var cmax = path.length - 1
+        if( c != undefined ){ cmin = c; cmax = c;}
         var i;
         var file;
-        for( c=0; c<path.length; c++ )
+        for( c=cmin; c<=cmax; c++ )
         {
 //            var path_str = "";
             var path_str = img_dir;
@@ -782,7 +790,7 @@ function init()
 //        xml2path( changeId[1], changeId[2], mySelect );
         xml2path( { c: changeId[1], depth: changeId[2], name: mySelect } );
 //        path2panels();
-        path2panels(0);
+        path2panels( 0, changeId[1] );
     }
 
     
@@ -872,7 +880,7 @@ function init()
         $("#panel_div-" + (c_add)).html( str );
 */
 //        path2panels();
-        path2panels(0);
+        path2panels( 0 );
 
 /*
         var obj_tmp = path2menu();
@@ -925,7 +933,7 @@ function init()
 
         var parent = document.getElementById('panel_div');
         parent.removeChild( document.getElementById('panel_div-' + (path.length)) );
-        path2panels(0);
+        path2panels( 0 );
 //        path2panels();
     }
 
@@ -1037,7 +1045,7 @@ function init()
         }
         shiftMenu( 0, inc );
 //        path2panels();
-        path2panels(0);
+        path2panels( 0, c );
 
     }
 
