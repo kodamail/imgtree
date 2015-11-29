@@ -30,7 +30,9 @@ xml_tree_filename = xml_tree_filename.replace( /[^\/]+\/\.\.\//g, "" );
 // default menu size in [0-100]
 var size_default = 20;
 
-var panel_width_default = 48;  // in %
+//var panel_width_default = 48;  // in %
+var panel_width_default = 40;  // in %
+//var panel_width_default = 22;  // in %
 
 
 //---------------------------------------------------------------------------//
@@ -450,6 +452,7 @@ function init()
     //---------------------------------------------------//
     function path2panels( initFlag, c )
     {
+//console.log(c);
 //        var cmin, cmax;
         //
         var obj_tmp = path2menu();
@@ -470,6 +473,7 @@ function init()
 //        for( c=0; c<=menu_name.length-1; c++ )
         for( c=cmin; c<=cmax; c++ )
         {
+//console.log(cmin + " : " +  cmax);
             if( initFlag == 1 ){ initPanel( c ); }
             createPanel( obj_tmp, c );
         }
@@ -487,32 +491,57 @@ function init()
         if( cmin == cmax ){ draw(cmin); }
         else{ draw(); }
         registerDynamicEvents();  // re-register events
+
+//            if( initFlag != 1 ){ aaa; }
+        // make panel draggable and resizable
+        $( ".panel" ).draggable();
+        $( ".panel" ).resizable();
+        var timer_panel = false;
+
+//        $( ".panel" ).off("resize");
+        $( ".panel" ).on("resize", function(e,ui)
+        {
+            if( timer_panel !== false ){ clearTimeout(timer_panel); }
+            timer_panel = setTimeout(function()
+            {
+//                console.log("resize");
+                onResize(e);
+            }, 200 );
+        });
+
     }
 
     function initPanel( c )
     {
 //        $("#panel_div").append( '<div id="panel_div-' + c + '" style="border-style: solid;"></div>' );
 //        $("#panel_div").append( '<div id="panel_div-' + c + '" style="border-style: solid; width: 50%"></div>' );
-        $("#panel_div").append( '<div id="panel_div-' + c + '" style="border-style: solid;"></div>' );
+
+//        $("#panel_div").append( '<div id="panel_div-' + c + '" class="ui-widget-content panel" style="border-style: solid;"></div>' );
+
+        var cmax = Math.floor( 100 / panel_width_default );
+        var top = 50 * Math.floor(c / cmax);
+console.log( "top :" +  top);
+        var left = (c % cmax) * panel_width_default;
+// TODO: topがうまく効いていない
+        $("#panel_div").append( '<div id="panel_div-' + c + '" class="ui-widget-content panel" style="border-style: solid; position: absolute; left: ' + left + '%; top: ' + top + '%"><div id="cpanel_div-' + c + '"></div></div>' );
+
+
+//        if( c % cmax == 0 )
+//        {
+//            $("#panel_div").append( '<div id="panel_div-' + c + '" class="ui-widget-content panel" style="border-style: solid;"><div id="cpanel_div-' + c + '"></div></div>' );
+//        }
+//        else
+//        {
+//            $("#panel_div").append( '<div id="panel_div-' + c + '" class="ui-widget-content panel" style="border-style: solid; position: absolute; left: 50%; top: ' + top + '%"><div id="cpanel_div-' + c + '"></div></div>' );
+//        }
+
         document.getElementById( 'panel_div-' + c ).style.setProperty( "width", panel_width_default + '%' );
+
+
+//        document.getElementById( 'panel_div-' + c ).style.setProperty( "height", '30%' );
 
 //        document.getElementById( 'panel_div-' + c ).style.setProperty( "width", panel_width_default );
 
-/*
-        if( c == 0 )
-        {
-            panel_clientWidth_init = document.getElementById( 'panel_div-' + c ).clientWidth;
-            panel_offsetWidth_init = document.getElementById( 'panel_div-' + c ).offsetWidth;
-//console.log(panel_clientWidth_init);
-//console.log(panel_offsetWidth_init);
-//var element = document.getElementById( 'panel_div-' + c );
-//var document_obj = element.ownerDocument;
-//var window_obj = document_obj.defaultView;
-//console.log(window_obj.getComputedStyle(element));
-//console.log(window_obj.getComputedStyle(element).width); // この時点では大きさが定まっていない！
-//console.log(element.style.width); // この時点では大きさが定まっていない！
-        }
-*/
 
 //        $("#panel_div").append( '<div id="panel_div-' + c + '" style="border-style: solid; width: 1000px; height: 800px; padding: 0.5em;"></div>' );
 //  #resizable { width: 150px; height: 150px; padding: 0.5em; }
@@ -520,10 +549,13 @@ function init()
 
 //            $("#panel_div").append( '<div id="panel_div-' + c + '" style="position: relative; left: 83px; top: -3px;"></div>' );
 //            $("#panel_div").append( '<div id="panel_div-' + c + '" style="position: absolute; left: 83px; top: -3px;"></div>' );
+/*
         $(function() // make it draggable
         {
             $( "#panel_div-" + c ).draggable();
+            $( "#panel_div-" + c ).resizable();
         });
+*/
     }
 
     // create one panel
@@ -540,11 +572,26 @@ function init()
         var disp;
 
         // add form and drawing field to the controller c's panel
-        $("#panel_div-" + c).html( '<form class="controller" id="controller_form-' + c + '" action="#"></form>' );
-        $("#panel_div-" + c).append( '<div id="draw_txt-' + c + '"></div>' );
+        $("#cpanel_div-" + c).html( '<form class="controller" id="controller_form-' + c + '" action="#"></form>' );
+        $("#cpanel_div-" + c).append( '<div id="draw_txt-' + c + '"></div>' );
 
         // clear form in a controller c (refresh cache)
         $("#controller_form-" + c).html( '' );
+
+        // add "+" and "-" buttons for a form
+        if( path.length > 1 )
+        {
+//            $("#controller_form-" + c).append( '<input id="conmm-' + c + '" class="conmm" type="button" value="panel--">' );
+            $("#controller_form-" + c).append( '<input id="conmm-' + c + '" class="conmm" type="button" value="-">' );
+        }
+        else // disabled button
+        {
+//            $("#controller_form-" + c).append( '<input id="conmm-' + c + '" class="conmm" type="button" value="panel--" disabled>' );
+            $("#controller_form-" + c).append( '<input id="conmm-' + c + '" class="conmm" type="button" value="-" disabled>' );
+        }
+//        $("#controller_form-" + c).append( '<input id="conpp-' + cpp + '" class="conpp" type="button" value="panel++">' );
+        $("#controller_form-" + c).append( '<input id="conpp-' + cpp + '" class="conpp" type="button" value="+">' );
+
 
         // create hash table
         // to obtain i from child_type[c][i-1] (i.e. obtain index from type)
@@ -616,7 +663,7 @@ function init()
                 }
 
                 // insert/don't insert "<br>" by checking size
-                function insertEnterBySize()
+                function insertEnterBySize() // it's not used now
                 {
                     var size = disp.attr("size");
                     if( size == undefined ){ size = size_default; }
@@ -642,7 +689,7 @@ function init()
                 // default appearance for single type (not specified in disp_list.xml)
                 if( typeof disp.attr("type") === "undefined" && k == i )
                 {
-                    insertEnterBySize();
+//                    insertEnterBySize();
                     type_button( child_type[c][i-1], "&lt;", -1, child_type[c][i-1], "no" );
                     type_menu( i );
                     type_button( child_type[c][i-1], "&gt;", +1, child_type[c][i-1], "no" );
@@ -651,7 +698,9 @@ function init()
                 // specified in disp_list.xml
                 else if( typeof disp.attr("type") !== "undefined" )
                 {
-                    insertEnterBySize();
+//                    insertEnterBySize();
+//                    $("#controller_form-" + c).append( 'S' );
+//                    $("#controller_form-" + c).append( 'S<div id=>' );
                     disp.children("*").each(function() // for all <button>, <menu>
                     {
                         // $(this): from <button>, <menu>
@@ -679,6 +728,8 @@ function init()
                             console.log( "  -> " + $(this)[0].tagName + " : " + $(this).attr("func") + " : " + $(this).text() );
                         }
                     });
+//                    $("#controller_form-" + c).append( 'F' );
+//                    $("#controller_form-" + c).append( '</span>F' );
                     i = k;
                     if( type_default == 1 ){ disp.attr( "type", "default" ); type_default = 0; }
                     break;
@@ -689,20 +740,20 @@ function init()
         }
 
         // size button
+/*
         $("#controller_form-" + c).append( '<br>' );
         $("#controller_form-" + c).append( '<input id="sizemm-' + c + '" class="sizemm" type="button" value="size--">' );
         $("#controller_form-" + c).append( '<input id="sizepp-' + c + '" class="sizepp" type="button" value="size++">' );
+*/
 
-        // add "+" and "-" buttons for a form
-        if( path.length > 1 )
+
+/*
+        $(function() // make controller draggable and resizable
         {
-            $("#controller_form-" + c).append( '<input id="conmm-' + c + '" class="conmm" type="button" value="panel--">' );
-        }
-        else // disabled button
-        {
-            $("#controller_form-" + c).append( '<input id="conmm-' + c + '" class="conmm" type="button" value="panel--" disabled>' );
-        }
-        $("#controller_form-" + c).append( '<input id="conpp-' + cpp + '" class="conpp" type="button" value="panel++">' );
+            $( "#panel_div-" + c ).draggable();
+            $( "#panel_div-" + c ).resizable();
+        });
+*/
     }
 
 
@@ -749,12 +800,16 @@ function init()
                     var i = changeId[2];
                     var id = "img-" + c + "-" + i;
 //                    document[id].width = document[id].naturalWidth * zoom_fnames[c];
-                    document[id].width = document.getElementById( 'panel_div-' + c ).clientWidth;
+                    changeSize(c);
+
+//                    document[id].width = document.getElementById( 'panel_div-' + c ).clientWidth;
+
                     document[id].style.setProperty( "visibility", "visible" );
                 });
                
             }
         }
+
     }
 
 
@@ -767,13 +822,25 @@ function init()
     // targets are dynamically generated.
     function registerDynamicEvents()
     {
-        $("select.xmlTree").change( onChangeXmlTree );
-        $("input.conpp").click( onAddCon );
-        $("input.conmm").click( onDelCon );
+        $( "select.xmlTree" ).off( "change" );
+        $( "select.xmlTree" ).on( "change", onChangeXmlTree );
+//        $("select.xmlTree").change( onChangeXmlTree );
 
-        $("input.sizepp").click( onMagnifySize );
-        $("input.sizemm").click( onReduceSize );
+        $( "input.conpp" ).off( "click" );
+        $( "input.conpp" ).on( "click", onAddCon );
+//        $("input.conpp").click( onAddCon );
 
+        $( "input.conmm" ).off( "click" );
+        $( "input.conmm" ).on( "click", onDelCon );
+//        $("input.conmm").click( onDelCon );
+
+        $( "input.sizepp" ).off( "click" );
+        $( "input.sizepp" ).on( "click", onMagnifySize );
+//        $("input.sizepp").click( onMagnifySize );
+
+        $( "input.sizemm" ).off( "click" );
+        $( "input.sizemm" ).on( "click", onReduceSize );
+//        $("input.sizemm").click( onReduceSize );
     }
     // just for one time
     function registerStaticEvents()
@@ -828,30 +895,7 @@ function init()
             {
                 child_type[c+1][i] = child_type[c][i];
             }
-/*
-            str = $("#panel_div-" + c).html();
-            rep = "(id=\"[^-]+-)" + c;
-            str = str.replace( new RegExp(rep, 'gi'), "$1" + (c+1) );
-            $("#panel_div-" + (c+1)).html( str );
-*/
-//            $("#panel_div-" + (c+1)).html( $("#panel_div-" + c).html() );
-//            console.log( "after: " + str);
-//            var str_prev = "";
-//            console.log( "before: " + str);
-//            while( str != str_prev ){ str_prev = str; str.replace( "controller_form-" + c, "controller_form-" + (c+1) ); }
-//            while( str != str_prev ){ str_prev = str; str.replace( "form-" + c, "form-" + (c+1) ); }
-//            while( str != str_prev ){ str_prev = str; str.replace( "select-" + c, "select-" + (c+1) ); }
-//            str.replace( /id=\"[^-]+-/, "" );
-//            var rep = "id=\"[^-]+-" + c;
-//            var rep = "id";
-//            str.replace( new RegExp(rep, 'gi'), "$1" + (c+1) );
-//            str.replace( new RegExp(rep, 'gi'), "HIT" );
-//            console.log( "rep: " + rep);
-//            console.log( "This is id=\"frema-1.".replace(new RegExp(rep, 'gi'), "HIT") );
-//            console.log( str.replace(new RegExp(rep, 'gi'), "$1" + (c+1)) );
-//            str.replace( new RegExp(rep, 'gi'), "$1" + (c+1) )
-            //str = str.replace( new RegExp(rep, 'gi'), "$1" + (c+1) );
-//            $("#panel_div-" + (c+1)).html( $("#panel_div-" + c).html() );
+            path2panels( 0, c+1 );
         }
         path[c_add].length         = 0;
         fnames[c_add].length       = 0;
@@ -871,26 +915,9 @@ function init()
         {
             child_type[c_add][i] = child_type[c_add-1][i];
         }
-
-        // TODO: just create one controller
-/*
-        str = $("#panel_div-" + (c_add-1)).html();
-        rep = "(id=\"[^-]+-)" + (c_add-1);
-        str = str.replace( new RegExp(rep, 'gi'), "$1" + (c_add) );
-        $("#panel_div-" + (c_add)).html( str );
-*/
+        path2panels( 0, c_add );
 //        path2panels();
-        path2panels( 0 );
-
-/*
-        var obj_tmp = path2menu();
-        var menu_name    = obj_tmp.menu_name;
-        for( c=0; c<=menu_name.length-1; c++ )
-        {
-            createPanel( obj_tmp, c );
-        }
-*/
-
+//        path2panels( 0 );
     }
 
     function onDelCon()
@@ -941,8 +968,8 @@ function init()
     function onMagnifySize()
     {
         var c = parseInt( $(this).attr("id").split("-")[1] );
-        var id_parent = "img-" + c;
         zoom_fnames[c] += 0.125;
+        var id_parent = "img-" + c;
         var panel_width = panel_width_default * zoom_fnames[c];
         document.getElementById( 'panel_div-' + c ).style.setProperty( "width", panel_width + "%" );
         for( var i=0; i<fnames[c].length; i++ )
@@ -955,8 +982,8 @@ function init()
     function onReduceSize()
     {
         var c = parseInt( $(this).attr("id").split("-")[1] );
-        var id_parent = "img-" + c;
         zoom_fnames[c] -= 0.125;
+        var id_parent = "img-" + c;
         var panel_width = panel_width_default * zoom_fnames[c];
         document.getElementById( 'panel_div-' + c ).style.setProperty( "width", panel_width + "%" );
         for( var i=0; i<fnames[c].length; i++ )
@@ -966,7 +993,44 @@ function init()
             document[id].width = document.getElementById( 'panel_div-' + c ).clientWidth;
         }
     }
+    function onResize(e)
+    {
+//        console.log(e);
+//        console.log(e.target.id);
+        var c = parseInt( e.target.id.split("-")[1] );
+        changeSize(c)
+    }
+    function changeSize(c)
+    {
+//console.log(c);
+        var id_parent = "img-" + c;
+//        var panel_width = panel_width_default * zoom_fnames[c];
+//        document.getElementById( 'panel_div-' + c ).style.setProperty( "width", panel_width + "%" );
+        for( var i=0; i<fnames[c].length; i++ )
+        {
+            var id = id_parent + "-" + i
+            var ar = document[id].naturalHeight / document[id].naturalWidth;
+            var maxWidth  = document.getElementById( 'panel_div-' + c ).clientWidth;
+            var maxHeight = document.getElementById( 'panel_div-' + c ).clientHeight - document.getElementById( 'controller_form-' + c ).clientHeight;
+//console.log( "maxWidth:" + maxWidth + " maxHeight: " + maxHeight + " ar=" + maxHeight / maxWidth );
 
+            if( ar > maxHeight / maxWidth )
+            {
+                document[id].height = maxHeight;
+                document[id].width  = maxHeight / ar;
+            }
+            else
+            {
+                document[id].width  = maxWidth;
+                document[id].height = maxWidth * ar;
+            }
+//console.log( ar );
+
+//            document[id].width = document[id].naturalWidth * zoom_fnames[c];
+//            document[id].width  = document.getElementById( 'panel_div-' + c ).clientWidth;
+//            document[id].height = document.getElementById( 'panel_div-' + c ).clientHeight - document.getElementById( 'controller_form-' + c ).clientHeight;
+        }
+    }
 
     function onShiftMenu( eo )
     {
