@@ -16,22 +16,19 @@ if( typeof(img_dir) == "undefined" )
 // list of image files in xml
 if( typeof(xml_tree_filename) == "undefined" )
   var xml_tree_filename = img_dir + '/../list.xml';
-//  var xml_tree_filename = img_dir + '/list.xml';
+xml_tree_filename = xml_tree_filename.replace( /[^\/]+\/\.\.\//g, "" );
 //
 // xml files for directory tree and type
 if( typeof(xml_type_list_filename) == "undefined" )
   var xml_type_list_filename = img_dir + '/type.xml';
-//  var xml_type_list_filename = 'usr/type.xml';
 if( typeof(xml_disp_list_filename) == "undefined" )
   var xml_disp_list_filename  = img_dir + '/disp.xml';
-//  var xml_disp_list_filename  = img_dir + 'usr/disp.xml';
-xml_tree_filename = xml_tree_filename.replace( /[^\/]+\/\.\.\//g, "" );
 
-// default menu size in [0-100]
-var size_default = 20;
+// delete! default menu size in [0-100]
+//var size_default = 20;
 
-//var panel_width_default = 48;  // in %
-var panel_width_default = 40;  // in %
+var panel_width_default = 49;  // in %
+//var panel_width_default = 45;  // in %
 //var panel_width_default = 22;  // in %
 
 
@@ -50,7 +47,6 @@ function init()
     //---------------------------------------------------//
     //
     // contents of xml
-//    var xmlTypeList;
     var xmlDispList;
     var xmlTypeList;
     var xmlTree;
@@ -71,8 +67,6 @@ function init()
     //   c: the number of controler (=0 for the first controller)
     //   i: the number of image file. i>0.
     var fnames = []; fnames[0] = [];
-    //
-//    var size_fnames = []; size_fnames[0] = []; // test
     //
     // zoom_fnames[c]: image size relative to the original size in ratio
     //   c: the number of controler (=0 for the first controller)
@@ -99,21 +93,30 @@ function init()
         {
             arg = args[1].split( "&" );
         }
+console.log(arg);
         for( var depth=0; depth<=arg.length-1; depth++ )
         {
             var temp = arg[depth].split( "=" );
             var key = temp[0];
             if( 1 in temp ){ value = temp[1]; }
             else{ value = ""; }
+console.log(key + " : " + value);
             if( key == "path" )
             {
                 path_init = [];
                 path_list = value.split( "," );
                 for( var c=0; c<path_list.length; c++ )
                 {
+console.log(c);
                     path_init[c] = path_list[c].split( "/" );
                 }
             }
+            else if( key == "width" )
+            {
+                panel_width_default = Number(value);
+console.log(panel_width_default);
+            }
+
         }
     })();
 
@@ -322,11 +325,9 @@ function init()
             if( ! target.children("dir").is("dir") ) // -> false if child "dir" does not exist.
             {
                 fnames[c].length = 0;
-//                size_fnames[c].length = 0;
                 target.children("file").each( function()
                 {
                     fnames[c][fnames[c].length] = $(this).attr("name");
-//                    size_fnames[c][size_fnames[c].length] = $(this).attr("name");
                 });
             }
         } // init_path end
@@ -339,10 +340,8 @@ function init()
         if( depth > 0 )
         {
             tmp = tmp.children("dir");
-
 //        var idx        = menu_name[c][i].indexOf(path[c][i]);
 //            if( menu_name[c][depth].indexOf(name) )
-
 //            console.log( menu_name[c][depth].indexOf(name) );
 //            if( menu_name[c][depth].indexOf(name) < 0 )
 //            {
@@ -350,7 +349,7 @@ function init()
 //            }
 //            else
 //            {
-                path[c][depth]         = name;
+            path[c][depth]         = name;
 //            }
             for( var i=1; i<=depth; i++ ) // seek to the specified depth
             {
@@ -490,21 +489,20 @@ function init()
 
         if( cmin == cmax ){ draw(cmin); }
         else{ draw(); }
+
         registerDynamicEvents();  // re-register events
 
-//            if( initFlag != 1 ){ aaa; }
         // make panel draggable and resizable
         $( ".panel" ).draggable();
-        $( ".panel" ).resizable();
+        $( ".panel" ).resizable( { handles: "all" } );
         var timer_panel = false;
 
-//        $( ".panel" ).off("resize");
-        $( ".panel" ).on("resize", function(e,ui)
+        $( ".panel" ).off( "resize" );
+        $( ".panel" ).on( "resize", function(e,ui)
         {
             if( timer_panel !== false ){ clearTimeout(timer_panel); }
             timer_panel = setTimeout(function()
             {
-//                console.log("resize");
                 onResize(e);
             }, 200 );
         });
@@ -520,22 +518,15 @@ function init()
 
         var cmax = Math.floor( 100 / panel_width_default );
         var top = 50 * Math.floor(c / cmax);
-console.log( "top :" +  top);
-        var left = (c % cmax) * panel_width_default;
-// TODO: top‚ª‚¤‚Ü‚­Œø‚¢‚Ä‚¢‚È‚¢
-        $("#panel_div").append( '<div id="panel_div-' + c + '" class="ui-widget-content panel" style="border-style: solid; position: absolute; left: ' + left + '%; top: ' + top + '%"><div id="cpanel_div-' + c + '"></div></div>' );
+//console.log( "top :" +  top);
+        var left = (c % cmax) * (panel_width_default + 1);
 
+console.log("left:" + left);
 
-//        if( c % cmax == 0 )
-//        {
-//            $("#panel_div").append( '<div id="panel_div-' + c + '" class="ui-widget-content panel" style="border-style: solid;"><div id="cpanel_div-' + c + '"></div></div>' );
-//        }
-//        else
-//        {
-//            $("#panel_div").append( '<div id="panel_div-' + c + '" class="ui-widget-content panel" style="border-style: solid; position: absolute; left: 50%; top: ' + top + '%"><div id="cpanel_div-' + c + '"></div></div>' );
-//        }
+        $("#panel_div").append( '<div id="panel_div-' + c + '" class="ui-widget-content panel" style="border-style: solid; position: absolute; left: ' + left + '%; top: ' + top + '%; background-color: #DDDDDD;"><div id="cpanel_div-' + c + '"></div></div>' );
 
         document.getElementById( 'panel_div-' + c ).style.setProperty( "width", panel_width_default + '%' );
+        document.getElementById( 'panel_div-' + c ).style.setProperty( "height", '98%' );
 
 
 //        document.getElementById( 'panel_div-' + c ).style.setProperty( "height", '30%' );
@@ -573,7 +564,7 @@ console.log( "top :" +  top);
 
         // add form and drawing field to the controller c's panel
         $("#cpanel_div-" + c).html( '<form class="controller" id="controller_form-' + c + '" action="#"></form>' );
-        $("#cpanel_div-" + c).append( '<div id="draw_txt-' + c + '"></div>' );
+        $("#cpanel_div-" + c).append( '<div id="draw_txt-' + c + '" style="padding: 0px; margin:0px;"></div>' );
 
         // clear form in a controller c (refresh cache)
         $("#controller_form-" + c).html( '' );
@@ -663,6 +654,7 @@ console.log( "top :" +  top);
                 }
 
                 // insert/don't insert "<br>" by checking size
+/*
                 function insertEnterBySize() // it's not used now
                 {
                     var size = disp.attr("size");
@@ -674,6 +666,7 @@ console.log( "top :" +  top);
                         size_now = Number( size );
                     }
                 }
+*/
                 //
                 // if <disp type="default"> exists
                 if( typeof disp.attr("type") === "undefined" && k == i )
@@ -938,10 +931,6 @@ console.log( "top :" +  top);
             {
                 fnames[c-1][i] = fnames[c][i];
             }
-/*            for( i=0; i<size_fnames[c].length; i++ )
-            {
-                size_fnames[c-1][i] = size_fnames[c][i];
-            }*/
             zoom_fnames[c-1] = zoom_fnames[c];
             for( i=0; i<child_type[c].length; i++ )
             {
@@ -954,7 +943,6 @@ console.log( "top :" +  top);
         }
         path.length         = path.length - 1;
         fnames.length       = fnames.length - 1;
-//        size_fnames.length  = size_fnames.length - 1;
         child_type.length   = child_type.length - 1
 //        path_running.length = path_running.length - 1;
 
