@@ -123,10 +123,10 @@ console.log(panel_width_default);
 
 /*
     // TODO
-    // ‘®«–ˆiŒ»ó‚Å‚Í[‚³–ˆj‚Éfix/sync/w’è–³‚µ‚ğİ’è‚Å‚«‚é‚æ‚¤‚É‚·‚éH
-    // fix‚Á‚Ä‰½‚¾‚Á‚¯H
-    // ˜_—“I‚É‘I‚×‚È‚¢ê‡‚Ígray‰»H
-    // “¯Šú‚É¸”s‚µ‚½ê‡‚Í0‚É–ß‚·H
+    // å±æ€§æ¯ï¼ˆç¾çŠ¶ã§ã¯æ·±ã•æ¯ï¼‰ã«fix/sync/æŒ‡å®šç„¡ã—ã‚’è¨­å®šã§ãã‚‹ã‚ˆã†ã«ã™ã‚‹ï¼Ÿ
+    // fixã£ã¦ä½•ã ã£ã‘ï¼Ÿ
+    // è«–ç†çš„ã«é¸ã¹ãªã„å ´åˆã¯grayåŒ–ï¼Ÿ
+    // åŒæœŸã«å¤±æ•—ã—ãŸå ´åˆã¯0ã«æˆ»ã™ï¼Ÿ
     var pstat = new Array(); // 0:none, 1:fixed, 2:sync
 */
     //
@@ -266,7 +266,7 @@ console.log(panel_width_default);
             var flag = 0;
             target.children("dir").each( function()
             {
-                if( $(this).attr("name") == path_prev[path[c].length] ) // TODO: ‚±‚±‚ğˆÈ‰ºH‚É’¼‚·
+                if( $(this).attr("name") == path_prev[path[c].length] ) // TODO: ã“ã“ã‚’ä»¥ä¸‹ï¼Ÿã«ç›´ã™
 //                if( $(this).attr("name") == path_prev[path[c].length] || ( sync[c] == 1 && $(this).attr("name") == path[0][c] )  )
                 {
                     path[c][path[c].length]             = $(this).attr("name");
@@ -345,7 +345,7 @@ console.log(panel_width_default);
 //            console.log( menu_name[c][depth].indexOf(name) );
 //            if( menu_name[c][depth].indexOf(name) < 0 )
 //            {
-//                path[c][depth] = menu_name[c][depth][menu_name[c][depth].indexOf(path_prev[depth]) + inc]; // –¢ƒ`ƒFƒbƒN, inc‚ ‚Ó‚êˆ—•K—v
+//                path[c][depth] = menu_name[c][depth][menu_name[c][depth].indexOf(path_prev[depth]) + inc]; // æœªãƒã‚§ãƒƒã‚¯, incã‚ãµã‚Œå‡¦ç†å¿…è¦
 //            }
 //            else
 //            {
@@ -792,12 +792,13 @@ console.log("left:" + left);
                     var c = changeId[1];
                     var i = changeId[2];
                     var id = "img-" + c + "-" + i;
-//                    document[id].width = document[id].naturalWidth * zoom_fnames[c];
+//                    id].width = document[id].naturalWidth * zoom_fnames[c];
                     changeSize(c);
 
 //                    document[id].width = document.getElementById( 'panel_div-' + c ).clientWidth;
 
-                    document[id].style.setProperty( "visibility", "visible" );
+//                    document[id].style.setProperty( "visibility", "visible" );
+                    document.getElementById(id).style.setProperty( "visibility", "visible" );
                 });
                
             }
@@ -964,7 +965,9 @@ console.log("left:" + left);
         {
             var id = id_parent + "-" + i
 //            document[id].width = document[id].naturalWidth * zoom_fnames[c];
-            document[id].width = document.getElementById( 'panel_div-' + c ).clientWidth;
+//            document[id].width = document.getElementById( 'panel_div-' + c ).clientWidth;
+            document.getElementById(id).width = document.getElementById( 'panel_div-' + c ).clientWidth;
+
         }
     }
     function onReduceSize()
@@ -978,8 +981,9 @@ console.log("left:" + left);
         {
             var id = id_parent + "-" + i
 //            document[id].width = document[id].naturalWidth * zoom_fnames[c];
-            document[id].width = document.getElementById( 'panel_div-' + c ).clientWidth;
-        }
+//            document[id].width = document.getElementById( 'panel_div-' + c ).clientWidth;
+            document.getElementById(id).width = document.getElementById( 'panel_div-' + c ).clientWidth;
+}
     }
     function onResize(e)
     {
@@ -997,21 +1001,26 @@ console.log("left:" + left);
         for( var i=0; i<fnames[c].length; i++ )
         {
             var id = id_parent + "-" + i
-            var ar = document[id].naturalHeight / document[id].naturalWidth;
+//            var ar = document[id].naturalHeight / document[id].naturalWidth;
+            var ar = document.getElementById(id).naturalHeight / document.getElementById(id).naturalWidth;
             var maxWidth  = document.getElementById( 'panel_div-' + c ).clientWidth;
             var maxHeight = document.getElementById( 'panel_div-' + c ).clientHeight - document.getElementById( 'controller_form-' + c ).clientHeight;
 //console.log( "maxWidth:" + maxWidth + " maxHeight: " + maxHeight + " ar=" + maxHeight / maxWidth );
 
             if( ar > maxHeight / maxWidth )
             {
-                document[id].height = maxHeight;
-                document[id].width  = maxHeight / ar;
+//                document[id].height = maxHeight;
+//                document[id].width  = maxHeight / ar;
+                document.getElementById(id).height = maxHeight;
+                document.getElementById(id).width  = maxHeight / ar;
             }
             else
             {
-                document[id].width  = maxWidth;
-                document[id].height = maxWidth * ar;
-            }
+//                document[id].width  = maxWidth;
+//                document[id].height = maxWidth * ar;
+                document.getElementById(id).width  = maxWidth;
+                document.getElementById(id).height = maxWidth * ar;
+}
 //console.log( ar );
 
 //            document[id].width = document[id].naturalWidth * zoom_fnames[c];
