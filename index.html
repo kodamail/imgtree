@@ -7,6 +7,7 @@
 <script type="text/javascript" src="cnf.js"></script>
 <script type="text/javascript" src="js/jquery/1.8.2/jquery.min.js"></script>
 <script type="text/javascript" src="js/common.js"></script>
+<script type="text/javascript" src="js/opt.js"></script>
 
 
 <link rel="stylesheet" href="js/jquery-ui/1.11.4/jquery-ui.css">
@@ -14,7 +15,8 @@
 
 </head>
 <!--<body onload="init();" style="height:100%; margin:0px; padding: 0px; top: 0px;" >-->
-<body onload="init();" style="top: 0px; bottom: 0px; margin:0px; padding: 0px;">
+<!--<body onload="init();" style="top: 0px; bottom: 0px; margin:0px; padding: 0px;">-->
+<body onload="init(); init_opt();" style="top: 0px; bottom: 0px; margin:0px; padding: 0px;">
 
 <div id="head_message"><!-- message at the top of the page (default: nothing) --></div>
 
@@ -42,8 +44,17 @@
 
 <div id="menu" style="position: relative; width: 140px; top: 0px; margin: 5px">
 <a href="" id="a_reload" title="Link for this figure">reload</a>
-reset (<a href="./index.html?path=dummy&width=99" title="Reset selections">1</a>/<a href="./index.html?path=dummy,dummy&width=49" title="Reset selections">2</a>/<a href="./index.html?path=dummy,dummy,dummy,dummy&width=49" title="Reset selections">4</a>)
+reset (<a href="./index.html" title="Default">def</a>/<a href="./index.html?path=dummy&width=99" title="Reset selections">1</a>/<a href="./index.html?path=dummy,dummy&width=49" title="Reset selections">2</a>/<a href="./index.html?path=dummy,dummy,dummy,dummy&width=49" title="Reset selections">4</a>)
 <br>
+
+<form id="shared_selects">
+  <select id="select_run2">
+    <option>ESsp2016_01.run000.2015.060100_org</option>
+    <option>ESsp2016_01.run000.2015.060100_with_gwd</option>
+  </select>
+</form>
+
+
 <h3>Model Bias</h3>
 Zonal mean
 <a href="./index.html?path=img_dev/latlev/model_bias/JRA55/K.200406.N12.gl09.b/t/seasonal_mean/2004/JJA,img_dev/latlev/model_bias/JRA55/K.200406.N12.gl09.b/u/seasonal_mean/2004/JJA" title="Reset selections">T/U</a>
