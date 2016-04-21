@@ -15,3 +15,7 @@ var img_dir = './img';
 // comment out below if you prepare your own in img_dir
 var xml_type_list_filename = 'usr/default/type.xml';
 var xml_disp_list_filename = 'usr/default/disp.xml';
+
+// comment in when debug mode
+var debug = 1;
+

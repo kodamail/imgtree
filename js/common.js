@@ -77,6 +77,11 @@ function init()
     //   n: the number of select box for each c
     var child_type   = []; child_type[0]   = [];
     //
+    // shared_type[i][j]: types common to all the controllers
+    //   i: index for type. i>0.
+    //   j: names for each type. j>0.
+//    var shared_type = []; shared_type[0] = []; // TODO: implement!
+    //
 //    // path_running[c][n]: running title for path[c][n]
 //    var path_running = []; path_running[0] = [];
     //
@@ -93,28 +98,28 @@ function init()
         {
             arg = args[1].split( "&" );
         }
-console.log(arg);
+//console.log(arg);
         for( var depth=0; depth<=arg.length-1; depth++ )
         {
             var temp = arg[depth].split( "=" );
             var key = temp[0];
             if( 1 in temp ){ value = temp[1]; }
             else{ value = ""; }
-console.log(key + " : " + value);
+//console.log(key + " : " + value);
             if( key == "path" )
             {
                 path_init = [];
                 path_list = value.split( "," );
                 for( var c=0; c<path_list.length; c++ )
                 {
-console.log(c);
+//console.log(c);
                     path_init[c] = path_list[c].split( "/" );
                 }
             }
             else if( key == "width" )
             {
                 panel_width_default = Number(value);
-console.log(panel_width_default);
+//console.log(panel_width_default);
             }
             else if( key == "select_run2" ) // temporaly
             {
@@ -442,8 +447,8 @@ console.log(panel_width_default);
                     }
                 });
                 target = target.children( "[ name = '" + path[c][i] + "' ]" );
-            }
-        }
+            } // i loop ends
+        } // c loop ends
 //        return menu_name;
         return { menu_name: menu_name, menu_running: menu_running, menu_desc: menu_desc };
     }
@@ -473,13 +478,12 @@ console.log(panel_width_default);
         if( initFlag == 1 ){ $("#panel_div").html( '' ); } // clear main panel
         //
         // for each controller
-//        for( c=0; c<=menu_name.length-1; c++ )
         for( c=cmin; c<=cmax; c++ )
         {
-//console.log(cmin + " : " +  cmax);
             if( initFlag == 1 ){ initPanel( c ); }
             createPanel( obj_tmp, c );
         }
+        createSharedPanel( obj_tmp );
         
         // set link for re-load
         var href = "index.html?path=";
@@ -525,7 +529,7 @@ console.log(panel_width_default);
 //console.log( "top :" +  top);
         var left = (c % cmax) * (panel_width_default + 1);
 
-console.log("left:" + left);
+//console.log("left:" + left);
 
         $("#panel_div").append( '<div id="panel_div-' + c + '" class="ui-widget-content panel" style="border-style: solid; position: absolute; left: ' + left + '%; top: ' + top + '%; background-color: #DDDDDD;"><div id="cpanel_div-' + c + '"></div></div>' );
 
@@ -743,7 +747,6 @@ console.log("left:" + left);
         $("#controller_form-" + c).append( '<input id="sizepp-' + c + '" class="sizepp" type="button" value="size++">' );
 */
 
-
 /*
         $(function() // make controller draggable and resizable
         {
@@ -751,6 +754,97 @@ console.log("left:" + left);
             $( "#panel_div-" + c ).resizable();
         });
 */
+    }
+
+    function createSharedPanel( path2menuObj )
+    {
+        console.log( "createSharedPanel" );
+        var menu_name    = path2menuObj.menu_name;
+//        var menu_running = path2menuObj.menu_running;
+//        var menu_desc    = path2menuObj.menu_desc;
+
+        var shared_type = []; // common types among controllers
+        var shared_name = []; // common selected names among controllers for each type
+        var idx = []; idx[0] = []; // [c][i] index for name
+        for( var i=0; i<=child_type[0].length-2; i++ )
+        {
+            var idx_tmp = [];
+            var flag = 1;
+            for( var c=1; c<=child_type.length-1; c++ )
+            {
+                if( i == 0 ){ idx[c] = []; }
+                for( var j=0; j<=child_type[c].length-2; j++ )
+                {
+                    if( child_type[c][j] == child_type[0][i] && path[c][j+1] == path[0][i+1] )
+                    {
+                        idx_tmp[c] = j + 1;
+                        break;
+                    }
+                    if( j == child_type[c].length-2 ){ flag = 0; }
+                }
+                if( flag == 0 ){ break; }
+            }
+            //console.log( child_type[0][i] + " : " + flag );
+            if( flag == 1 )
+            {
+                shared_type[shared_type.length] = child_type[0][i];
+                idx[0][idx[0].length] = i + 1;
+                for( var c=1; c<=idx.length-1; c++ ){ idx[c][idx[c].length] = idx_tmp[c]; }
+            }
+        }
+        if( debug == 1 ){ console.log( shared_type ); }
+
+        var shared_name_list = []; // [i][j]: selectable name list for shared_type[i]
+        for( var i=0; i<=shared_type.length-1; i++ )
+        {
+            shared_name_list[i] = [];
+
+            if( debug == 1 ){ console.log( menu_name[0][idx[0][i]] ); }
+            for( var j=0; j<=menu_name[0][idx[0][i]].length-1; j++ )
+            {
+                if( debug == 1 ){ console.log( ">>" + menu_name[0][idx[0][i]][j] ); }
+                var flag = 1;
+
+
+                for( var c=1; c<=menu_name.length-1; c++ )
+                {
+                    for( var j2=0; j2<=menu_name[c][idx[c][i]].length-1; j2++ )
+                    {
+                        if( debug == 1 ){ console.log( "    <-> " + menu_name[c][idx[c][i]][j2] ); }
+                        if( menu_name[0][idx[0][i]][j] == menu_name[c][idx[c][i]][j2] ){ break; }
+                        if( j2 == menu_name[c][idx[c][i]].length-1 ){ flag = 0; }
+                    }
+                    if( flag == 0 ){ break; }
+                }
+
+                if( debug == 1 ){ console.log( "      --> flag = " + flag ); }
+
+
+                if( flag == 1 ){ shared_name_list[i][shared_name_list[i].length] = menu_name[0][idx[0][i]][j]; }
+            }
+            if( debug == 1 ){ console.log( shared_name_list[i] ); }
+        }
+
+        // create shared panel
+        $( '#shared_selects' ).html( '' );
+        for( var i=0; i<=shared_name_list.length-1; i++ )
+        {
+            if( shared_name_list[i].length == 1 ){ continue; }
+            $( '#shared_selects' ).append( '<input id="shared_shift_mm_' + shared_type[i] + '" class="shared_shift" type="button" value="<">' );
+            $( '#shared_selects' ).append( '<select id="shared_select_' + shared_type[i] + '" class="shared_selects"></select>' );
+            for( var j=0; j<=shared_name_list[i].length-1; j++ )
+            {
+                var tmp = "";
+                if( shared_name_list[i][j] == path[0][idx[0][i]] ){ tmp = "selected"; }
+                $( '#shared_select_' + shared_type[i] ).append( '<option ' + tmp + '>' + shared_name_list[i][j] + '</option>' );
+            }
+            $( '#shared_selects' ).append( '<input id="shared_shift_pp_' + shared_type[i] + '" class="shared_shift" type="button" value=">">' );
+        }
+        $( 'input.shared_shift' ).bind( "click", {}, onShiftSharedMenu );
+
+        // TODO: create event (see opt.gs for reference)
+
+
     }
 
 
@@ -839,11 +933,62 @@ console.log("left:" + left);
         $( "input.sizemm" ).off( "click" );
         $( "input.sizemm" ).on( "click", onReduceSize );
 //        $("input.sizemm").click( onReduceSize );
+
+        $( "select.shared_selects" ).off( "change" );
+        $( "select.shared_selects" ).on( "change", onChangeSharedSelects );
     }
     // just for one time
     function registerStaticEvents()
     {
 //        $("#sync").change( onChangeSync );
+    }
+
+
+    function onChangeSharedSelects()
+    {
+//        console.log( "onChangeSharedSelects() starts" );
+        var mySelect = $(this).children("option:selected").attr("value");
+        var changeId = $(this).attr("id").split("_");
+
+        changeSharedSelects( changeId[2], mySelect );
+
+/*
+        for( var c=0; c<=path.length-1; c++ )
+        {
+            for( var i=1; i<=path[c].length-1; i++ )
+            {
+                if( child_type[c][i-1] == changeId[2] )
+                {
+                    xml2path( { c: c, depth: i, name: mySelect } );
+                    console.log( c + " : " + changeId[2] + " : " + mySelect );
+                    path2panels( 0, c );
+                    break;
+                }
+            }
+        }
+*/
+    }
+
+    function changeSharedSelects( type, mySelect )
+    {
+//        console.log( "onChangeSharedSelects() starts" );
+//        var mySelect = $(this).children("option:selected").attr("value");
+//        var changeId = $(this).attr("id").split("_");
+
+        for( var c=0; c<=path.length-1; c++ )
+        {
+            for( var i=1; i<=path[c].length-1; i++ )
+            {
+//                if( child_type[c][i-1] == changeId[2] )
+                if( child_type[c][i-1] == type )
+                {
+                    xml2path( { c: c, depth: i, name: mySelect } );
+//                    console.log( c + " : " + changeId[2] + " : " + mySelect );
+                    path2panels( 0, c );
+                    break;
+                }
+            }
+        }
     }
 
 
@@ -1030,6 +1175,31 @@ console.log("left:" + left);
 //            document[id].width = document[id].naturalWidth * zoom_fnames[c];
 //            document[id].width  = document.getElementById( 'panel_div-' + c ).clientWidth;
 //            document[id].height = document.getElementById( 'panel_div-' + c ).clientHeight - document.getElementById( 'controller_form-' + c ).clientHeight;
+        }
+    }
+
+    function onShiftSharedMenu( eo )
+    {
+//        console.log( $(this).attr("id") );
+        var changeId = $(this).attr("id").split("_");
+        var changeOpe  = changeId[2]; // "pp" or "mm"
+        var changeType = changeId[3];
+        var changeValue = $( '#shared_select_' + changeType ).children("option:selected").attr("value");
+//        console.log( changeValue );
+
+        var opt = document.getElementById( 'shared_select_' + changeType ).options;
+        for( var i=0; i<=opt.length-1; i++ )
+        {
+//            console.log( opt[i].value );
+            if( opt[i].value == changeValue )
+            {
+                var it = i;
+                if     ( changeOpe == "pp" ){ it = (i+1)%opt.length; }
+                else if( changeOpe == "mm" ){ it = (i+opt.length-1)%opt.length; }
+                opt[it].selected = true;
+                changeSharedSelects( changeType, opt[it].value );
+                break;
+            }
         }
     }
 

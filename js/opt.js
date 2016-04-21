@@ -1,14 +1,15 @@
+// TODO: merge to common.js
+
 var select_run2 = "ESsp2016_01.run000.2015.060100_org";
 var prev_select_run2 = select_run2;
 
 function init_opt()
 {
     opt = document.getElementById( "select_run2" ).options;
-//    console.log( "length:" + opt.length );
     for( j=0; j<opt.length; j++ )
     {
-	console.log( opt[j].text );
-	if( opt[j].text == select_run2 ){ opt[j].selected = true; }
+        console.log( opt[j].text );
+        if( opt[j].text == select_run2 ){ opt[j].selected = true; }
     }
 
     selectRun2( select_run2 );
@@ -17,37 +18,22 @@ function init_opt()
 
     function onChangeSelectRun2()
     {
-	//console.log( mySelect_in );
-	//	if( mySelect_in  )
-	//var mySelect = $(this).children("option:selected").attr("value");
-	prev_select_run2 = select_run2;
-	select_run2 = $(this).children("option:selected").html();
-	console.log( "mySelect: " +  select_run2 );
-	console.log( "prev_mySelect: " +  prev_select_run2 );
+        prev_select_run2 = select_run2;
+        select_run2 = $(this).children("option:selected").html();
 
-	selectRun2( select_run2 );
+        selectRun2( select_run2 );
 
-	url_jump = document.getElementById("a_reload").href;
-//    var prev_url_jump = url_jump;
-    while( true )
-    {
-        var prev_url_jump = url_jump;
-	    url_jump = url_jump.replace( '/' + prev_select_run2 + '/', '/' + select_run2 + '/' );
-        if( prev_url_jump == url_jump ){ break; }
-    }
-//	    url_jump = url_jump.replace( '/' + prev_select_run2 + '/', '/' + select_run2 + '/' );
-
-
-
-	//	url_jump = url_jump.replace( '/' + select_run2 + '/', '/' + mySelect + '/' );
-	url_jump += '&select_run2=' + select_run2;
+        url_jump = document.getElementById("a_reload").href;
+        while( true )
+        {
+            var prev_url_jump = url_jump;
+	        url_jump = url_jump.replace( '/' + prev_select_run2 + '/', '/' + select_run2 + '/' );
+            if( prev_url_jump == url_jump ){ break; }
+        }
+        url_jump += '&select_run2=' + select_run2;
 	   
-	console.log( "jump: " + url_jump );
-
-	//	prev_select_run2 = mySelect;
-
-	window.location.href = url_jump;
-	return;
+        window.location.href = url_jump;
+        return;
     }
 
 
