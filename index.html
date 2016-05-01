@@ -7,7 +7,7 @@
 <script type="text/javascript" src="cnf.js"></script>
 <script type="text/javascript" src="js/jquery/1.8.2/jquery.min.js"></script>
 <script type="text/javascript" src="js/common.js"></script>
-<script type="text/javascript" src="js/opt.js"></script>
+<!--<script type="text/javascript" src="js/opt.js"></script>-->
 
 
 <link rel="stylesheet" href="js/jquery-ui/1.11.4/jquery-ui.css">
@@ -15,8 +15,8 @@
 
 </head>
 <!--<body onload="init();" style="height:100%; margin:0px; padding: 0px; top: 0px;" >-->
-<!--<body onload="init();" style="top: 0px; bottom: 0px; margin:0px; padding: 0px;">-->
-<body onload="init(); init_opt();" style="top: 0px; bottom: 0px; margin:0px; padding: 0px;">
+<body onload="init();" style="top: 0px; bottom: 0px; margin:0px; padding: 0px;">
+<!--<body onload="init(); init_opt();" style="top: 0px; bottom: 0px; margin:0px; padding: 0px;">-->
 
 <div id="head_message"><!-- message at the top of the page (default: nothing) --></div>
 
@@ -43,26 +43,40 @@
 -->
 
 <div id="menu" style="position: relative; width: 140px; top: 0px; margin: 5px">
-<a href="" id="a_reload" title="Link for this figure">reload</a>
-reset (<a href="./index.html" title="Default">def</a>/<a href="./index.html?path=dummy&width=99" title="Reset selections">1</a>/<a href="./index.html?path=dummy,dummy&width=49" title="Reset selections">2</a>/<a href="./index.html?path=dummy,dummy,dummy,dummy&width=49" title="Reset selections">4</a>)
+<a href="" id="a_reload" title="Link for this figure">reload</a>reset (<a href="./index.html" title="Default">def</a>/<a href="./index.html?path=dummy&width=99" title="Reset selections">1</a>/<a href="./index.html?path=dummy,dummy&width=49" title="Reset selections">2</a>/<a href="./index.html?path=dummy,dummy,dummy,dummy&width=49" title="Reset selections">4</a>)
 <br>
 
 <form id="shared_selects">
 </form>
 
-
-
 <h3>Model Bias</h3>
-<form>
-  <select id="select_run2">
-    <option>ESsp2016_01.run000.2015.060100_org</option>
-    <option>ESsp2016_01.run000.2015.060100_with_gwd</option>
-  </select>
-</form>
-Zonal mean
-<a href="./index.html?path=img_dev/latlev/model_bias/JRA55/K.200406.N12.gl09.b/t/seasonal_mean/2004/JJA,img_dev/latlev/model_bias/JRA55/K.200406.N12.gl09.b/u/seasonal_mean/2004/JJA" title="Reset selections">T/U</a>
-<h3>Sensitivity</h3>
+<
+<div>
+  Surface <br>
+  <div id="ln_precip"><a href="http://www.jamstec.go.jp/nicam/ES_TC/imgtree/index.html?path=img/kodama/latlon/model_bias/GPCP.v2.2/ESsp2016_01.run000.2015.060100/precip/seasonal_mean/2015/JJA/global">Precip</a></div>
+  <div id="ln_t2m_u10m"><a href="http://www.jamstec.go.jp/nicam/ES_TC/imgtree/index.html?path=img/kodama/latlon/model_bias/JRA55v2/ESsp2016_01.run000.2015.060100/t2m/seasonal_mean/2015/JJA/global,img/kodama/latlon/model_bias/JRA55v2/ESs\
+p2016_01.run000.2015.060100/u10m/seasonal_mean/2015/JJA/global">T2m/U10m</a></div>
 </div>
+<br>
+
+<div>
+  TOA <br>
+  <div id="ln_net_rad"><a href="http://www.jamstec.go.jp/nicam/ES_TC/imgtree/index.html?path=img/kodama/latlon/model_bias/CERES_EBAF_TOA_Ed2.8/ESsp2016_01.run000.2015.060100/aw_net_toa/seasonal_mean/2015/JJA/global">NET-RAD</a>(<a href="http://www.jamstec.go.jp/nicam/ES_TC/imgtree/index.html?path=img/kodama/latzm/model_bias/CERES_EBAF_TOA_Ed2.8/ESsp2016_01.run000.2015.060100/aw_net_toa/seasonal_mean/2015/JJA/global">ZM</a>)</div>
+  <div id="ln_olr_osr"><a href="http://www.jamstec.go.jp/nicam/ES_TC/imgtree/index.html?path=img/kodama/latlon/model_bias/CERES_EBAF_TOA_Ed2.8/ESsp2016_01.run000.2015.060100/lw_up_toa/seasonal_mean/2015/JJA/global,img/kodama/latlon/model_bias/CERES_EBAF_TOA_Ed2.8/ESsp2016_01.run000.2015.060100/sw_up_toa/seasonal_mean/2015/JJA/global">OLR/OSR</a>(<a href="http://www.jamstec.go.jp/nicam/ES_TC/imgtree/index.html?path=img/kodama/latzm/model_bias/CERES_EBAF_TOA_Ed2.8/ESsp2016_01.run000.2015.060100/lw_up_toa/seasonal_mean/2015/JJA/global,img/kodama/latzm/model_bias/CERES_EBAF_TOA_Ed2.8/ESsp2016_01.run000.2015.060100/sw_up_toa/seasonal_mean/2015/JJA/global">ZM</a>)</div>
+  <div id="ln_olrc_lsrc"><a href="http://www.jamstec.go.jp/nicam/ES_TC/imgtree/index.html?path=img/kodama/latlon/model_bias/CERES_EBAF_TOA_Ed2.8/ESsp2016_01.run000.2015.060100/lw_up_clr_toa/seasonal_mean/2015/JJA/global,img/kodama/latlon/model_bias/CERES_EBAF_TOA_Ed2.8/ESsp2016_01.run000.2015.060100/sw_up_clr_toa/seasonal_mean/2015/JJA/global">OLRc/OSRc</a>(<a href="http://www.jamstec.go.jp/nicam/ES_TC/imgtree/index.html?path=img/kodama/latzm/model_bias/CERES_EBAF_TOA_Ed2.8/ESsp2016_01.run000.2015.060100/lw_up_clr_toa/seasonal_mean/2015/JJA/global,img/kodama/latzm/model_bias/CERES_EBAF_TOA_Ed2.8/ESsp2016_01.run000.2015.060100/sw_up_clr_toa/seasonal_mean/2015/JJA/global">ZM</a>)</div>
+  <div id="ln_lwcre_swcre"><a href="http://www.jamstec.go.jp/nicam/ES_TC/imgtree/index.html?path=img/kodama/latlon/model_bias/CERES_EBAF_TOA_Ed2.8/ESsp2016_01.run000.2015.060100/lw_crf_toa/seasonal_mean/2015/JJA/global,img/kodama/latlon/model_bias/CERES_EBAF_TOA_Ed2.8/ESsp2016_01.run000.2015.060100/sw_crf_toa/seasonal_mean/2015/JJA/global">LW/SWCRE</a>(<a href="http://www.jamstec.go.jp/nicam/ES_TC/imgtree/index.html?path=img/kodama/latzm/model_bias/CERES_EBAF_TOA_Ed2.8/ESsp2016_01.run000.2015.060100/lw_crf_toa/seasonal_mean/2015/JJA/global,img/kodama/latzm/model_bias/CERES_EBAF_TOA_Ed2.8/ESsp2016_01.run000.2015.060100/sw_crf_toa/seasonal_mean/2015/JJA/global">ZM</a>)</div>
+</div>
+<br>
+
+<div>
+  Lat-Height ZM <br>
+  <div id="ln_t_u"><a href="http://www.jamstec.go.jp/nicam/ES_TC/imgtree/index.html?path=img/kodama/latlev/model_bias/JRA55v2/ESsp2016_01.run000.2015.060100/t/seasonal_mean/2015/JJA,img/kodama/latlev/model_bias/JRA55v2/ESsp2016_01.run000.2015.060100/u/seasonal_mean/2015/JJA">T/U</a></div>
+  <div id="ln_rh_qv"><a href="http://www.jamstec.go.jp/nicam/ES_TC/imgtree/index.html?path=img/kodama/latlev/model_bias/JRA55v2/ESsp2016_01.run000.2015.060100/rh/seasonal_mean/2015/JJA,img/kodama/latlev/model_bias/JRA55v2/ESsp2016_01.run000.2015.060100/qv/seasonal_mean/2015/JJA">RH/Qv</a></div>
+</div>
+<br>
+
+
+
 
 <!-- panels -->
 <!--<div id="panel_div"></div>-->

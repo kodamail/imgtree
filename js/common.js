@@ -121,10 +121,10 @@ function init()
                 panel_width_default = Number(value);
 //console.log(panel_width_default);
             }
-            else if( key == "select_run2" ) // temporaly
-            {
-                select_run2 = value;
-            }
+//            else if( key == "select_run2" ) // temporaly
+//            {
+//                select_run2 = value;
+//            }
 
         }
     })();
