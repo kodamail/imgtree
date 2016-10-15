@@ -475,7 +475,7 @@ function init()
 
         // put menu to html
         //
-        if( initFlag == 1 ){ $("#panel_div").html( '' ); } // clear main panel
+        if( initFlag == 1 ){ $("#div_panel").html( '' ); } // clear main panel
         //
         // for each controller
         for( c=cmin; c<=cmax; c++ )
@@ -519,10 +519,10 @@ function init()
 
     function initPanel( c )
     {
-//        $("#panel_div").append( '<div id="panel_div-' + c + '" style="border-style: solid;"></div>' );
-//        $("#panel_div").append( '<div id="panel_div-' + c + '" style="border-style: solid; width: 50%"></div>' );
+//        $("#div_panel").append( '<div id="div_panel-' + c + '" style="border-style: solid;"></div>' );
+//        $("#div_panel").append( '<div id="div_panel-' + c + '" style="border-style: solid; width: 50%"></div>' );
 
-//        $("#panel_div").append( '<div id="panel_div-' + c + '" class="ui-widget-content panel" style="border-style: solid;"></div>' );
+//        $("#div_panel").append( '<div id="div_panel-' + c + '" class="ui-widget-content panel" style="border-style: solid;"></div>' );
 
         var cmax = Math.floor( 100 / panel_width_default );
         var top = 50 * Math.floor(c / cmax);
@@ -531,28 +531,28 @@ function init()
 
 //console.log("left:" + left);
 
-        $("#panel_div").append( '<div id="panel_div-' + c + '" class="ui-widget-content panel" style="border-style: solid; position: absolute; left: ' + left + '%; top: ' + top + '%; background-color: #DDDDDD;"><div id="cpanel_div-' + c + '"></div></div>' );
+        $("#div_panel").append( '<div id="div_panel-' + c + '" class="ui-widget-content panel" style="border-style: solid; position: absolute; left: ' + left + '%; top: ' + top + '%; background-color: #DDDDDD;"><div id="cpanel_div-' + c + '"></div></div>' );
 
-        document.getElementById( 'panel_div-' + c ).style.setProperty( "width", panel_width_default + '%' );
-        document.getElementById( 'panel_div-' + c ).style.setProperty( "height", '98%' );
-
-
-//        document.getElementById( 'panel_div-' + c ).style.setProperty( "height", '30%' );
-
-//        document.getElementById( 'panel_div-' + c ).style.setProperty( "width", panel_width_default );
+        document.getElementById( 'div_panel-' + c ).style.setProperty( "width", panel_width_default + '%' );
+        document.getElementById( 'div_panel-' + c ).style.setProperty( "height", '98%' );
 
 
-//        $("#panel_div").append( '<div id="panel_div-' + c + '" style="border-style: solid; width: 1000px; height: 800px; padding: 0.5em;"></div>' );
+//        document.getElementById( 'div_panel-' + c ).style.setProperty( "height", '30%' );
+
+//        document.getElementById( 'div_panel-' + c ).style.setProperty( "width", panel_width_default );
+
+
+//        $("#div_panel").append( '<div id="div_panel-' + c + '" style="border-style: solid; width: 1000px; height: 800px; padding: 0.5em;"></div>' );
 //  #resizable { width: 150px; height: 150px; padding: 0.5em; }
 
 
-//            $("#panel_div").append( '<div id="panel_div-' + c + '" style="position: relative; left: 83px; top: -3px;"></div>' );
-//            $("#panel_div").append( '<div id="panel_div-' + c + '" style="position: absolute; left: 83px; top: -3px;"></div>' );
+//            $("#div_panel").append( '<div id="div_panel-' + c + '" style="position: relative; left: 83px; top: -3px;"></div>' );
+//            $("#div_panel").append( '<div id="div_panel-' + c + '" style="position: absolute; left: 83px; top: -3px;"></div>' );
 /*
         $(function() // make it draggable
         {
-            $( "#panel_div-" + c ).draggable();
-            $( "#panel_div-" + c ).resizable();
+            $( "#div_panel-" + c ).draggable();
+            $( "#div_panel-" + c ).resizable();
         });
 */
     }
@@ -750,8 +750,8 @@ function init()
 /*
         $(function() // make controller draggable and resizable
         {
-            $( "#panel_div-" + c ).draggable();
-            $( "#panel_div-" + c ).resizable();
+            $( "#div_panel-" + c ).draggable();
+            $( "#div_panel-" + c ).resizable();
         });
 */
     }
@@ -893,7 +893,7 @@ function init()
 //                    id].width = document[id].naturalWidth * zoom_fnames[c];
                     changeSize(c);
 
-//                    document[id].width = document.getElementById( 'panel_div-' + c ).clientWidth;
+//                    document[id].width = document.getElementById( 'div_panel-' + c ).clientWidth;
 
 //                    document[id].style.setProperty( "visibility", "visible" );
                     document.getElementById(id).style.setProperty( "visibility", "visible" );
@@ -1011,7 +1011,7 @@ function init()
         fnames[c]      = [];
         child_type[c]  = [];
         zoom_fnames[c] = 1;
-//        $("#panel_div").append( '<div id="panel_div-' + c + '"></div>' );
+//        $("#div_panel").append( '<div id="div_panel-' + c + '"></div>' );
         initPanel( c );
     }
 
@@ -1096,8 +1096,8 @@ function init()
         child_type.length   = child_type.length - 1
 //        path_running.length = path_running.length - 1;
 
-        var parent = document.getElementById('panel_div');
-        parent.removeChild( document.getElementById('panel_div-' + (path.length)) );
+        var parent = document.getElementById('div_panel');
+        parent.removeChild( document.getElementById('div_panel-' + (path.length)) );
         path2panels( 0 );
 //        path2panels();
     }
@@ -1109,13 +1109,13 @@ function init()
         zoom_fnames[c] += 0.125;
         var id_parent = "img-" + c;
         var panel_width = panel_width_default * zoom_fnames[c];
-        document.getElementById( 'panel_div-' + c ).style.setProperty( "width", panel_width + "%" );
+        document.getElementById( 'div_panel-' + c ).style.setProperty( "width", panel_width + "%" );
         for( var i=0; i<fnames[c].length; i++ )
         {
             var id = id_parent + "-" + i
 //            document[id].width = document[id].naturalWidth * zoom_fnames[c];
-//            document[id].width = document.getElementById( 'panel_div-' + c ).clientWidth;
-            document.getElementById(id).width = document.getElementById( 'panel_div-' + c ).clientWidth;
+//            document[id].width = document.getElementById( 'div_panel-' + c ).clientWidth;
+            document.getElementById(id).width = document.getElementById( 'div_panel-' + c ).clientWidth;
 
         }
     }
@@ -1125,13 +1125,13 @@ function init()
         zoom_fnames[c] -= 0.125;
         var id_parent = "img-" + c;
         var panel_width = panel_width_default * zoom_fnames[c];
-        document.getElementById( 'panel_div-' + c ).style.setProperty( "width", panel_width + "%" );
+        document.getElementById( 'div_panel-' + c ).style.setProperty( "width", panel_width + "%" );
         for( var i=0; i<fnames[c].length; i++ )
         {
             var id = id_parent + "-" + i
 //            document[id].width = document[id].naturalWidth * zoom_fnames[c];
-//            document[id].width = document.getElementById( 'panel_div-' + c ).clientWidth;
-            document.getElementById(id).width = document.getElementById( 'panel_div-' + c ).clientWidth;
+//            document[id].width = document.getElementById( 'div_panel-' + c ).clientWidth;
+            document.getElementById(id).width = document.getElementById( 'div_panel-' + c ).clientWidth;
 }
     }
     function onResize(e)
@@ -1146,14 +1146,14 @@ function init()
 //console.log(c);
         var id_parent = "img-" + c;
 //        var panel_width = panel_width_default * zoom_fnames[c];
-//        document.getElementById( 'panel_div-' + c ).style.setProperty( "width", panel_width + "%" );
+//        document.getElementById( 'div_panel-' + c ).style.setProperty( "width", panel_width + "%" );
         for( var i=0; i<fnames[c].length; i++ )
         {
             var id = id_parent + "-" + i
 //            var ar = document[id].naturalHeight / document[id].naturalWidth;
             var ar = document.getElementById(id).naturalHeight / document.getElementById(id).naturalWidth;
-            var maxWidth  = document.getElementById( 'panel_div-' + c ).clientWidth;
-            var maxHeight = document.getElementById( 'panel_div-' + c ).clientHeight - document.getElementById( 'controller_form-' + c ).clientHeight;
+            var maxWidth  = document.getElementById( 'div_panel-' + c ).clientWidth;
+            var maxHeight = document.getElementById( 'div_panel-' + c ).clientHeight - document.getElementById( 'controller_form-' + c ).clientHeight;
 //console.log( "maxWidth:" + maxWidth + " maxHeight: " + maxHeight + " ar=" + maxHeight / maxWidth );
 
             if( ar > maxHeight / maxWidth )
@@ -1173,8 +1173,8 @@ function init()
 //console.log( ar );
 
 //            document[id].width = document[id].naturalWidth * zoom_fnames[c];
-//            document[id].width  = document.getElementById( 'panel_div-' + c ).clientWidth;
-//            document[id].height = document.getElementById( 'panel_div-' + c ).clientHeight - document.getElementById( 'controller_form-' + c ).clientHeight;
+//            document[id].width  = document.getElementById( 'div_panel-' + c ).clientWidth;
+//            document[id].height = document.getElementById( 'div_panel-' + c ).clientHeight - document.getElementById( 'controller_form-' + c ).clientHeight;
         }
     }
 

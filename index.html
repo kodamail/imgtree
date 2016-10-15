@@ -1,34 +1,30 @@
 <!DOCTYPE html>
-<html style="height:100%; margin:0px; padding:0px;">
+<html>
 
 <head>
 <meta charset="utf-8">
 <title>imgtree html sample</title>
-
 <script type="text/javascript" src="cnf.js"></script>
 <script type="text/javascript" src="js/jquery/1.8.2/jquery.min.js"></script>
 <script type="text/javascript" src="js/common.js"></script>
 <script type="text/javascript" src="js/opt.js"></script>
 <link rel="stylesheet" href="js/jquery-ui/1.11.4/jquery-ui.css">
 <script type="text/javascript" src="js/jquery-ui/1.11.4/jquery-ui.js"></script>
+<link rel="stylesheet" href="index.css">
 </head>
 
 <!--<body onload="init();" style="height:100%; margin:0px; padding: 0px; top: 0px;" >-->
-<body onload="init();" style="top: 0px; bottom: 0px; margin:0px; padding: 0px;">
+<body onload="init();">
 
 <!--<div id="head_message">-->
 <!-- message at the top of the page (default: nothing) -->
 <!--</div>-->
 
-<div id="menu" style="position: relative; width: 140px; top: 0px; margin: 5px">
+<div id="div_sidemenu">
 
 <a href="" id="a_reload" title="Link for this figure">reload</a>
 reset (<a href="./index.html" title="Default">def</a>/<a href="./index.html?path=dummy&width=99" title="Reset selections">1</a>/<a href="./index.html?path=dummy,dummy&width=49" title="Reset selections">2</a>/<a href="./index.html?path=dummy,dummy,dummy,dummy&width=49" title="Reset selections">4</a>)
 <br>
-
-<form id="shared_selects">
-<!-- shared_select (automatically generated here) -->
-</form>
 
 <h3>Model Bias</h3>
 
@@ -55,11 +51,18 @@ reset (<a href="./index.html" title="Default">def</a>/<a href="./index.html?path
 </div>
 <br>
 
-</div> <!-- end of id="menu" -->
+</div> <!-- end of id="div_sidemenu" -->
+
+
+<div id="div_shared_selects">
+<form id="shared_selects">
+<!-- shared_select (automatically generated here) -->
+</form>
+</div>
 
 
 <!-- panels -->
-<div id="panel_div" style="position: absolute; top: 0px; left: 150px; right: 0px; bottom: 0px;">
+<div id="div_panel">
 <!-- panels are displayed here -->
 </div>
 

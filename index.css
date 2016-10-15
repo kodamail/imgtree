@@ -1,0 +1,68 @@
+/* これ、不要な気がする */
+html
+{
+    height  : 100%;
+    margin  : 0px;
+    padding : 0px;
+}
+
+body
+{
+    top     : 0px;
+    bottom  : 0px;
+    margin  : 0px;
+    padding : 0px;
+}
+
+/*
+#div_sidemenu
+{
+    position : relative;
+    width    : 140px;
+    top      : 0px;
+    margin   : 5px;
+}
+*/
+#div_sidemenu
+{
+    position : absolute;
+    width    : 140px;
+    top      : 0px;
+    left     : 0px;
+    margin   : 0px;
+    padding  : 5px;
+}
+
+#div_shared_selects
+{
+    position : absolute;
+    top      : 0px;
+    left     : 140px;
+    right    : 0px;
+    height   : 30px
+    margin   : 2px;
+    padding  : 1px;
+}
+
+/*
+#div_panel
+{
+    position : absolute;
+    top      : 0px;
+    left     : 150px;
+    right    : 0px;
+    bottom   : 0px;
+}
+*/
+#div_panel
+{
+    position : absolute;
+    top      : 30px;
+    left     : 140px;
+    right    : 0px;
+    bottom   : 0px;
+    margin   : 2px;
+    padding  : 1px;
+}
+
+
