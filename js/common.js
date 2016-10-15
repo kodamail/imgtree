@@ -28,6 +28,10 @@ var panel_width_default = 49;  // in %
 //var panel_width_default = 45;  // in %
 //var panel_width_default = 22;  // in %
 
+// number of panels used only for calculating width and height of panels
+var disp_nx = 2;
+//var disp_ny = 2;
+var disp_ny = 1;
 
 //---------------------------------------------------------------------------//
 //
@@ -76,8 +80,12 @@ function init()
 //    // path_running[c][n]: running title for path[c][n]
 //    var path_running = []; path_running[0] = [];
     //
-    var panel_clientWidth_init = 0;
-    var panel_offsetWidth_init = 0;
+//    var panel_clientWidth_init = 0;
+//    var panel_offsetWidth_init = 0;
+
+    // panel width and height for displaying (because of the dependency on existence of scroll bar etc)
+    var panel_width  = Number( document.getElementById( 'div_panel' ).clientWidth  ) - 20; // width + padding - 20 (for scroll)
+    var panel_height = Number( document.getElementById( 'div_panel' ).clientHeight ) - 10; // height + padding
 
     // set initial value (from url)
     var path_init;
@@ -487,35 +495,31 @@ function init()
 
     function initPanel( c )
     {
-//        $("#div_panel").append( '<div id="div_panel-' + c + '" style="border-style: solid;"></div>' );
-//        $("#div_panel").append( '<div id="div_panel-' + c + '" style="border-style: solid; width: 50%"></div>' );
-
-//        $("#div_panel").append( '<div id="div_panel-' + c + '" class="ui-widget-content panel" style="border-style: solid;"></div>' );
-
+        console.log( "Start initPanel(" + c + ")" );
+/*
         var cmax = Math.floor( 100 / panel_width_default );
         var top = 50 * Math.floor(c / cmax);
-//console.log( "top :" +  top);
         var left = (c % cmax) * (panel_width_default + 1);
-
-//console.log("left:" + left);
-
         $("#div_panel").append( '<div id="div_panel-' + c + '" class="ui-widget-content panel" style="border-style: solid; position: absolute; left: ' + left + '%; top: ' + top + '%; background-color: #DDDDDD;"><div id="cpanel_div-' + c + '"></div></div>' );
-
         document.getElementById( 'div_panel-' + c ).style.setProperty( "width", panel_width_default + '%' );
         document.getElementById( 'div_panel-' + c ).style.setProperty( "height", '98%' );
+*/
+        var cx = c % disp_nx;
+        var cy = Math.floor( c / disp_nx );
+        var padding = 3;
+        var margin_for_border = 8;
+        console.log( "  " + panel_width + " : " + panel_height );
+        console.log( "  " + cx + " / " + disp_nx + " : " + cy + " / " + disp_ny );
+        console.log( "  " + cx * panel_width / disp_nx );
 
+        var left = cx * panel_width / disp_nx;
+        console.log( left );
+        var top  = cy * panel_height / disp_ny;
+        var pwidth = panel_width / disp_nx - 2 * padding - margin_for_border;
+        var pheight= panel_height / disp_ny - 2 * padding - margin_for_border;
 
-//        document.getElementById( 'div_panel-' + c ).style.setProperty( "height", '30%' );
+        $("#div_panel").append( '<div id="div_panel-' + c + '" class="ui-widget-content panel child_panel" style="left: ' + left + 'px; top: ' + top + 'px; width: ' + pwidth + 'px; height: ' + pheight + 'px; padding: ' + padding + 'px;"><div id="cpanel_div-' + c + '"></div></div>' );
 
-//        document.getElementById( 'div_panel-' + c ).style.setProperty( "width", panel_width_default );
-
-
-//        $("#div_panel").append( '<div id="div_panel-' + c + '" style="border-style: solid; width: 1000px; height: 800px; padding: 0.5em;"></div>' );
-//  #resizable { width: 150px; height: 150px; padding: 0.5em; }
-
-
-//            $("#div_panel").append( '<div id="div_panel-' + c + '" style="position: relative; left: 83px; top: -3px;"></div>' );
-//            $("#div_panel").append( '<div id="div_panel-' + c + '" style="position: absolute; left: 83px; top: -3px;"></div>' );
 /*
         $(function() // make it draggable
         {
@@ -822,7 +826,7 @@ function init()
             {
                 file = path_str + fnames[c][i];
 
-                if( debug > 0 )
+                if( debug > 1 )
                 {
                     $("#draw_txt-" + c).append( i + ": " + file + ", <br>" );
                 }
@@ -879,7 +883,6 @@ function init()
     function registerStaticEvents()
     {
     }
-
 
     function onChangeSharedSelects()
     {
