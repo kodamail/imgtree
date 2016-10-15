@@ -29,7 +29,7 @@ var panel_width_default = 49;  // in %
 //var panel_width_default = 22;  // in %
 
 // number of panels used only for calculating width and height of panels
-var disp_nx = 2;
+var disp_nx = 3;
 //var disp_ny = 2;
 var disp_ny = 1;
 
@@ -86,6 +86,10 @@ function init()
     // panel width and height for displaying (because of the dependency on existence of scroll bar etc)
     var panel_width  = Number( document.getElementById( 'div_panel' ).clientWidth  ) - 20; // width + padding - 20 (for scroll)
     var panel_height = Number( document.getElementById( 'div_panel' ).clientHeight ) - 10; // height + padding
+
+    // padding and margin for child panel
+    var cpanel_padding = 3;
+    var cpanel_margin_for_border = 8;
 
     // set initial value (from url)
     var path_init;
@@ -495,7 +499,7 @@ function init()
 
     function initPanel( c )
     {
-        console.log( "Start initPanel(" + c + ")" );
+        if( debug > 0 ){ console.log( "Start initPanel(" + c + ")" ); }
 /*
         var cmax = Math.floor( 100 / panel_width_default );
         var top = 50 * Math.floor(c / cmax);
@@ -506,19 +510,16 @@ function init()
 */
         var cx = c % disp_nx;
         var cy = Math.floor( c / disp_nx );
-        var padding = 3;
-        var margin_for_border = 8;
-        console.log( "  " + panel_width + " : " + panel_height );
-        console.log( "  " + cx + " / " + disp_nx + " : " + cy + " / " + disp_ny );
-        console.log( "  " + cx * panel_width / disp_nx );
+//        console.log( "  " + panel_width + " : " + panel_height );
+//        console.log( "  " + cx + " / " + disp_nx + " : " + cy + " / " + disp_ny );
+//        console.log( "  " + cx * panel_width / disp_nx );
 
         var left = cx * panel_width / disp_nx;
-        console.log( left );
         var top  = cy * panel_height / disp_ny;
-        var pwidth = panel_width / disp_nx - 2 * padding - margin_for_border;
-        var pheight= panel_height / disp_ny - 2 * padding - margin_for_border;
+        var pwidth = panel_width / disp_nx - 2 * cpanel_padding - cpanel_margin_for_border;
+        var pheight= panel_height / disp_ny - 2 * cpanel_padding - cpanel_margin_for_border;
 
-        $("#div_panel").append( '<div id="div_panel-' + c + '" class="ui-widget-content panel child_panel" style="left: ' + left + 'px; top: ' + top + 'px; width: ' + pwidth + 'px; height: ' + pheight + 'px; padding: ' + padding + 'px;"><div id="cpanel_div-' + c + '"></div></div>' );
+        $("#div_panel").append( '<div id="div_panel-' + c + '" class="ui-widget-content panel child_panel" style="left: ' + left + 'px; top: ' + top + 'px; width: ' + pwidth + 'px; height: ' + pheight + 'px; padding: ' + cpanel_padding + 'px;"><div id="cpanel_div-' + c + '"></div></div>' );
 
 /*
         $(function() // make it draggable
@@ -543,22 +544,25 @@ function init()
         var disp;
 
         // add form and drawing field to the controller c's panel
-        $("#cpanel_div-" + c).html( '<form class="controller" id="controller_form-' + c + '" action="#"></form>' );
-        $("#cpanel_div-" + c).append( '<div id="draw_txt-' + c + '" style="padding: 0px; margin:0px;"></div>' );
+//        $("#cpanel_div-" + c).html( '<form class="controller" id="form_controller-' + c + '" action="#"></form>' );
+//        $("#cpanel_div-" + c).append( '<div id="div_imgs-' + c + '" style="padding: 0px; margin:0px;"></div>' );
+        $("#div_panel-" + c).html( '<div id="div_controller-' + c + '" class="div_controller"></div>' );
+        $("#div_panel-" + c).append( '<div id="div_imgs-' + c + '" class="div_imgs"></div>' );
 
         // clear form in a controller c (refresh cache)
-        $("#controller_form-" + c).html( '' );
+        $("#div_controller-" + c).html( '<form class="controller" id="form_controller-' + c + '" action="#"></form>' );
+        $("#form_controller-" + c).html( '' );
 
         // add "+" and "-" buttons for a form
         if( path.length > 1 )
         {
-            $("#controller_form-" + c).append( '<input id="conmm-' + c + '" class="conmm" type="button" value="-">' );
+            $("#form_controller-" + c).append( '<input id="conmm-' + c + '" class="conmm" type="button" value="-">' );
         }
         else // disabled button
         {
-            $("#controller_form-" + c).append( '<input id="conmm-' + c + '" class="conmm" type="button" value="-" disabled>' );
+            $("#form_controller-" + c).append( '<input id="conmm-' + c + '" class="conmm" type="button" value="-" disabled>' );
         }
-        $("#controller_form-" + c).append( '<input id="conpp-' + cpp + '" class="conpp" type="button" value="+">' );
+        $("#form_controller-" + c).append( '<input id="conpp-' + cpp + '" class="conpp" type="button" value="+">' );
 
         // create hash table
         // to obtain i from child_type[c][i-1] (i.e. obtain index from type)
@@ -598,7 +602,7 @@ function init()
                     });
                     //
                     var id = 'select-' + c + '-' + i;
-                    $("#controller_form-" + c).append( '<select id="' + id + '" class="xmlTree" title="' + title + '"></select>' );
+                    $("#form_controller-" + c).append( '<select id="' + id + '" class="xmlTree" title="' + title + '"></select>' );
                     opt = document.getElementById( id ).options;
                     opt.length = 0;
                     for( j=0; j<=menu_name[c][i].length-1; j++ )
@@ -616,7 +620,7 @@ function init()
                 {
                     var id = 'form-' + c + '-' + id_num;
                     id_num++;
-                    $("#controller_form-" + c).append( '<input id="' + id + '" class="shift" type="button" value="' + text + '">' );
+                    $("#form_controller-" + c).append( '<input id="' + id + '" class="shift" type="button" value="' + text + '">' );
                     $("#" + id).bind( "click", 
                         {
                             c   : c,
@@ -655,8 +659,8 @@ function init()
                 else if( typeof disp.attr("type") !== "undefined" )
                 {
 //                    insertEnterBySize();
-//                    $("#controller_form-" + c).append( 'S' );
-//                    $("#controller_form-" + c).append( 'S<div id=>' );
+//                    $("#form_controller-" + c).append( 'S' );
+//                    $("#form_controller-" + c).append( 'S<div id=>' );
                     disp.children("*").each(function() // for all <button>, <menu>
                     {
                         // $(this): from <button>, <menu>
@@ -684,8 +688,8 @@ function init()
                             console.log( "  -> " + $(this)[0].tagName + " : " + $(this).attr("func") + " : " + $(this).text() );
                         }
                     });
-//                    $("#controller_form-" + c).append( 'F' );
-//                    $("#controller_form-" + c).append( '</span>F' );
+//                    $("#form_controller-" + c).append( 'F' );
+//                    $("#form_controller-" + c).append( '</span>F' );
                     i = k;
                     if( type_default == 1 ){ disp.attr( "type", "default" ); type_default = 0; }
                     break;
@@ -694,14 +698,6 @@ function init()
             }
             i = i + 1;
         }
-
-        // size button
-/*
-        $("#controller_form-" + c).append( '<br>' );
-        $("#controller_form-" + c).append( '<input id="sizemm-' + c + '" class="sizemm" type="button" value="size--">' );
-        $("#controller_form-" + c).append( '<input id="sizepp-' + c + '" class="sizepp" type="button" value="size++">' );
-*/
-
 /*
         $(function() // make controller draggable and resizable
         {
@@ -821,17 +817,17 @@ function init()
                 path_str += path[c][i] + "/";
             }
 
-            $("#draw_txt-" + c).html( "" );
+            $("#div_imgs-" + c).html( "" );
             for( i=0; i<fnames[c].length; i++ )
             {
                 file = path_str + fnames[c][i];
 
                 if( debug > 1 )
                 {
-                    $("#draw_txt-" + c).append( i + ": " + file + ", <br>" );
+                    $("#div_imgs-" + c).append( i + ": " + file + ", <br>" );
                 }
                 var id = "img-" + c + "-" + i;
-                $("#draw_txt-" + c).append( '<img id="' + id + '" src="./' + file + '" style="visibility: hidden;">' );
+                $("#div_imgs-" + c).append( '<img id="' + id + '" src="./' + file + '" style="visibility: hidden;">' );
 //                var panel_width = panel_width_default * zoom_fnames[c];
                 $("#"+id).one( "load", function () // width can be obtained after loading
                 {
@@ -870,11 +866,11 @@ function init()
         $( "input.conmm" ).off( "click" );
         $( "input.conmm" ).on( "click", onDelCon );
 
-        $( "input.sizepp" ).off( "click" );
-        $( "input.sizepp" ).on( "click", onMagnifySize );
+//        $( "input.sizepp" ).off( "click" );
+//        $( "input.sizepp" ).on( "click", onMagnifySize );
 
-        $( "input.sizemm" ).off( "click" );
-        $( "input.sizemm" ).on( "click", onReduceSize );
+//        $( "input.sizemm" ).off( "click" );
+//        $( "input.sizemm" ).on( "click", onReduceSize );
 
         $( "select.shared_selects" ).off( "change" );
         $( "select.shared_selects" ).on( "change", onChangeSharedSelects );
@@ -1015,7 +1011,7 @@ function init()
 //        path2panels();
     }
 
-
+/*
     function onMagnifySize()
     {
         var c = parseInt( $(this).attr("id").split("-")[1] );
@@ -1042,6 +1038,7 @@ function init()
             document.getElementById(id).width = document.getElementById( 'div_panel-' + c ).clientWidth;
         }
     }
+*/
     function onResize(e)
     {
         var c = parseInt( e.target.id.split("-")[1] );
@@ -1050,36 +1047,25 @@ function init()
     function changeSize(c)
     {
         var id_parent = "img-" + c;
-//        var panel_width = panel_width_default * zoom_fnames[c];
-//        document.getElementById( 'div_panel-' + c ).style.setProperty( "width", panel_width + "%" );
         for( var i=0; i<fnames[c].length; i++ )
         {
             var id = id_parent + "-" + i
-//            var ar = document[id].naturalHeight / document[id].naturalWidth;
             var ar = document.getElementById(id).naturalHeight / document.getElementById(id).naturalWidth;
-            var maxWidth  = document.getElementById( 'div_panel-' + c ).clientWidth;
-            var maxHeight = document.getElementById( 'div_panel-' + c ).clientHeight - document.getElementById( 'controller_form-' + c ).clientHeight;
-//console.log( "maxWidth:" + maxWidth + " maxHeight: " + maxHeight + " ar=" + maxHeight / maxWidth );
-
+//            var maxWidth  = document.getElementById( 'div_panel-' + c ).clientWidth;
+//            var maxHeight = document.getElementById( 'div_panel-' + c ).clientHeight - document.getElementById( 'form_controller-' + c ).clientHeight;
+            var maxWidth  = document.getElementById( 'div_panel-' + c ).clientWidth - cpanel_padding * 2;
+            var maxHeight = document.getElementById( 'div_panel-' + c ).clientHeight - document.getElementById( 'form_controller-' + c ).clientHeight - cpanel_padding * 3;
+            if( debug > 0 ){ console.log( "maxWidth:" + maxWidth + " maxHeight: " + maxHeight + " ar=" + maxHeight / maxWidth ); }
             if( ar > maxHeight / maxWidth )
             {
-//                document[id].height = maxHeight;
-//                document[id].width  = maxHeight / ar;
                 document.getElementById(id).height = maxHeight;
                 document.getElementById(id).width  = maxHeight / ar;
             }
             else
             {
-//                document[id].width  = maxWidth;
-//                document[id].height = maxWidth * ar;
                 document.getElementById(id).width  = maxWidth;
                 document.getElementById(id).height = maxWidth * ar;
-}
-//console.log( ar );
-
-//            document[id].width = document[id].naturalWidth * zoom_fnames[c];
-//            document[id].width  = document.getElementById( 'div_panel-' + c ).clientWidth;
-//            document[id].height = document.getElementById( 'div_panel-' + c ).clientHeight - document.getElementById( 'controller_form-' + c ).clientHeight;
+            }
         }
     }
 
