@@ -5,7 +5,7 @@
 //
 //---------------------------------------------------------------------------//
 //
-// debug: set 1 when debugging
+// debug: set >1 when debugging
 if( typeof(debug) == "undefined" )
   var debug = 0;
 //
@@ -23,9 +23,6 @@ if( typeof(xml_type_list_filename) == "undefined" )
   var xml_type_list_filename = img_dir + '/type.xml';
 if( typeof(xml_disp_list_filename) == "undefined" )
   var xml_disp_list_filename  = img_dir + '/disp.xml';
-
-// delete! default menu size in [0-100]
-//var size_default = 20;
 
 var panel_width_default = 49;  // in %
 //var panel_width_default = 45;  // in %
@@ -51,12 +48,6 @@ function init()
     var xmlTypeList;
     var xmlTree;
     //
-/*
-    // TODO: delete?
-    // TODO: move inside the function
-    var flag_sync = 0;
-    var sync = new Array(); // =0: no-sync  =1: sync
-*/
     //
     // path[c][n]: path for selected menu
     //   c: the number of controler (=0 for the first controller)
@@ -98,46 +89,30 @@ function init()
         {
             arg = args[1].split( "&" );
         }
-//console.log(arg);
+        if( debug > 0 ){ console.log( "Arguements from url" ); }
         for( var depth=0; depth<=arg.length-1; depth++ )
         {
             var temp = arg[depth].split( "=" );
             var key = temp[0];
             if( 1 in temp ){ value = temp[1]; }
             else{ value = ""; }
-//console.log(key + " : " + value);
+            if( debug > 0 ){ console.log( "  " + key + " : " + value ); }
             if( key == "path" )
             {
                 path_init = [];
                 path_list = value.split( "," );
                 for( var c=0; c<path_list.length; c++ )
                 {
-//console.log(c);
                     path_init[c] = path_list[c].split( "/" );
                 }
             }
             else if( key == "width" )
             {
                 panel_width_default = Number(value);
-//console.log(panel_width_default);
             }
-//            else if( key == "select_run2" ) // temporaly
-//            {
-//                select_run2 = value;
-//            }
-
         }
     })();
 
-
-/*
-    // TODO
-    // 属性毎（現状では深さ毎）にfix/sync/指定無しを設定できるようにする？
-    // fixって何だっけ？
-    // 論理的に選べない場合はgray化？
-    // 同期に失敗した場合は0に戻す？
-    var pstat = new Array(); // 0:none, 1:fixed, 2:sync
-*/
     //
     //---------------------------------------------------//
     //
@@ -151,6 +126,7 @@ function init()
     })();
     function init2()
     {
+        console.log( "Loading xml_disp_list (" + xml_disp_list_filename + ")" );
         $.ajax
         ({
             url      : xml_disp_list_filename + "?rand=" + Math.random(),
@@ -158,18 +134,19 @@ function init()
             dataType : 'xml',
             timeout  : 100000,
             success  : setXmlDispList,
-            error    : (function(){ $("#head_message").html( 'error: failed to open xml_disp_list (' + xml_disp_list_filename + ')' ); })
+//            error    : (function(){ $("#head_message").html( 'error: failed to open xml_disp_list (' + xml_disp_list_filename + ')' ); })
+            error    : (function(){ alert( 'error: failed to open xml_disp_list (' + xml_disp_list_filename + ')' ); })
         });
-        console.log( "loading xml_disp_list (" + xml_disp_list_filename + ")" );
         function setXmlDispList( xml, status )
         {
-            console.log( "xml_disp_list is loaded." );
+            console.log( "  xml_disp_list is loaded." );
             xmlDispList = xml;
             init3();
         }
     }
     function init3()
     {
+        console.log( "Loading xml_type_list (" + xml_type_list_filename + ")" );
         $.ajax
         ({
             url      : xml_type_list_filename + "?rand=" + Math.random(),
@@ -177,12 +154,12 @@ function init()
             dataType : 'xml',
             timeout  : 100000,
             success  : setxmlTypeList,
-            error    : (function(){ $("#head_message").html( 'error: failed to open xml_type_list (' + xml_type_list_filename + ')' ); })
+//            error    : (function(){ $("#head_message").html( 'error: failed to open xml_type_list (' + xml_type_list_filename + ')' ); })
+            error    : (function(){ alert( 'error: failed to open xml_type_list (' + xml_type_list_filename + ')' ); })
         });
-        console.log( "loading xml_type_list (" + xml_type_list_filename + ")" );
         function setxmlTypeList( xml, status )
         {
-            console.log( "xml_type_list is loaded." );
+            console.log( "  xml_type_list is loaded." );
             xmlTypeList = xml;
             init4();
         }
@@ -196,6 +173,7 @@ function init()
     //
     function init4()
     {
+        console.log( "Loading xml_tree (" + xml_tree_filename + ")" );
         $.ajax
         ({
             url      : xml_tree_filename + "?rand=" + Math.random(),
@@ -203,12 +181,12 @@ function init()
             dataType : 'xml',
             timeout  : 100000,
             success  : setXmlTree,
-            error    : (function(){ $("#head_message").html( 'error: failed to open xml_tree (' + xml_tree_filename + ')' ); })
+//            error    : (function(){ $("#head_message").html( 'error: failed to open xml_tree (' + xml_tree_filename + ')' ); })
+            error    : (function(){ alert( 'error: failed to open xml_tree (' + xml_tree_filename + ')' ); })
         });
-        console.log( "loading xml_tree (" + xml_tree_filename + ")" );
         function setXmlTree( xml, status )
         {
-            console.log( "xml_tree is loaded." );
+            console.log( "  xml_tree is loaded." );
             xmlTree = xml;
             //
             // xml -> path
@@ -250,7 +228,6 @@ function init()
         //
         if( inc  == undefined ){ inc = 0; }
         if( name == undefined ){ name = ""; }
-//        console.log("name: " + name );
 //        var menu_name = path2menu();
 
         // keep old path tp path_prev[].
@@ -275,15 +252,13 @@ function init()
             var flag = 0;
             target.children("dir").each( function()
             {
-                if( $(this).attr("name") == path_prev[path[c].length] ) // TODO: ここを以下？に直す
-//                if( $(this).attr("name") == path_prev[path[c].length] || ( sync[c] == 1 && $(this).attr("name") == path[0][c] )  )
+                if( $(this).attr("name") == path_prev[path[c].length] )
                 {
                     path[c][path[c].length]             = $(this).attr("name");
                     if( $(this).attr("child_type") != "" ){ child_type[c][child_type[c].length] = $(this).attr("child_type"); }
                     else                                  { child_type[c][child_type[c].length] = "none_" + child_type[c].length; }
                     flag = 1;
                     init_path( $(this) );
-//console.log( "test1: " + path[c][path[c].length-1] + " <- " + child_type[c][child_type[c].length-1] );
                     return false;
                 }
             });
@@ -364,7 +339,6 @@ function init()
             {
                 tmp = tmp.children( "[ name = '" + path[c][i] + "' ]" );
             }
-//            console.log("tmp: " + tmp.length);
             child_type[c][depth] = tmp.attr("child_type");
         }
         init_path( tmp );
@@ -420,7 +394,6 @@ function init()
                         {
                             menu_running[c][i][j] = $(this).text();
                         }
-//                        else if( $(this)[0].tagName === "description" )
                         else if( $(this)[0].tagName === "description" || $(this)[0].tagName === "desc" )
                         {
                             menu_desc[c][i][j] = $(this).text();
@@ -460,9 +433,6 @@ function init()
     //---------------------------------------------------//
     function path2panels( initFlag, c )
     {
-//console.log(c);
-//        var cmin, cmax;
-        //
         var obj_tmp = path2menu();
         var menu_name    = obj_tmp.menu_name;
         if( initFlag == undefined ){ initFlag = 1; }
@@ -470,8 +440,6 @@ function init()
         var cmin = 0;
         var cmax = menu_name.length-1;
         if( c != undefined ){ cmin = c; cmax = c; }
-
-        // TODO: delete inappropriate menu for "flag_sync=1"
 
         // put menu to html
         //
@@ -580,17 +548,13 @@ function init()
         // add "+" and "-" buttons for a form
         if( path.length > 1 )
         {
-//            $("#controller_form-" + c).append( '<input id="conmm-' + c + '" class="conmm" type="button" value="panel--">' );
             $("#controller_form-" + c).append( '<input id="conmm-' + c + '" class="conmm" type="button" value="-">' );
         }
         else // disabled button
         {
-//            $("#controller_form-" + c).append( '<input id="conmm-' + c + '" class="conmm" type="button" value="panel--" disabled>' );
             $("#controller_form-" + c).append( '<input id="conmm-' + c + '" class="conmm" type="button" value="-" disabled>' );
         }
-//        $("#controller_form-" + c).append( '<input id="conpp-' + cpp + '" class="conpp" type="button" value="panel++">' );
         $("#controller_form-" + c).append( '<input id="conpp-' + cpp + '" class="conpp" type="button" value="+">' );
-
 
         // create hash table
         // to obtain i from child_type[c][i-1] (i.e. obtain index from type)
@@ -662,19 +626,6 @@ function init()
                 }
 
                 // insert/don't insert "<br>" by checking size
-/*
-                function insertEnterBySize() // it's not used now
-                {
-                    var size = disp.attr("size");
-                    if( size == undefined ){ size = size_default; }
-                    size_now += Number( size );
-                    if( size_now > 100 )
-                    {
-                        $("#controller_form-" + c).append( '<br>' );
-                        size_now = Number( size );
-                    }
-                }
-*/
                 //
                 // if <disp type="default"> exists
                 if( typeof disp.attr("type") === "undefined" && k == i )
@@ -758,7 +709,7 @@ function init()
 
     function createSharedPanel( path2menuObj )
     {
-        console.log( "createSharedPanel" );
+        if( debug > 0 ){ console.log( "Start createSharedPanel()" ); }
         var menu_name    = path2menuObj.menu_name;
 //        var menu_running = path2menuObj.menu_running;
 //        var menu_desc    = path2menuObj.menu_desc;
@@ -784,7 +735,6 @@ function init()
                 }
                 if( flag == 0 ){ break; }
             }
-            //console.log( child_type[0][i] + " : " + flag );
             if( flag == 1 )
             {
                 shared_type[shared_type.length] = child_type[0][i];
@@ -792,37 +742,34 @@ function init()
                 for( var c=1; c<=idx.length-1; c++ ){ idx[c][idx[c].length] = idx_tmp[c]; }
             }
         }
-        if( debug == 1 ){ console.log( shared_type ); }
+        if( debug > 1 ){ console.log( shared_type ); }
 
         var shared_name_list = []; // [i][j]: selectable name list for shared_type[i]
         for( var i=0; i<=shared_type.length-1; i++ )
         {
             shared_name_list[i] = [];
 
-            if( debug == 1 ){ console.log( menu_name[0][idx[0][i]] ); }
+            if( debug > 1 ){ console.log( menu_name[0][idx[0][i]] ); }
             for( var j=0; j<=menu_name[0][idx[0][i]].length-1; j++ )
             {
-                if( debug == 1 ){ console.log( ">>" + menu_name[0][idx[0][i]][j] ); }
+                if( debug > 1 ){ console.log( ">>" + menu_name[0][idx[0][i]][j] ); }
                 var flag = 1;
-
 
                 for( var c=1; c<=menu_name.length-1; c++ )
                 {
                     for( var j2=0; j2<=menu_name[c][idx[c][i]].length-1; j2++ )
                     {
-                        if( debug == 1 ){ console.log( "    <-> " + menu_name[c][idx[c][i]][j2] ); }
+                        if( debug > 1 ){ console.log( "    <-> " + menu_name[c][idx[c][i]][j2] ); }
                         if( menu_name[0][idx[0][i]][j] == menu_name[c][idx[c][i]][j2] ){ break; }
                         if( j2 == menu_name[c][idx[c][i]].length-1 ){ flag = 0; }
                     }
                     if( flag == 0 ){ break; }
                 }
 
-                if( debug == 1 ){ console.log( "      --> flag = " + flag ); }
-
-
+                if( debug > 1 ){ console.log( "      --> flag = " + flag ); }
                 if( flag == 1 ){ shared_name_list[i][shared_name_list[i].length] = menu_name[0][idx[0][i]][j]; }
             }
-            if( debug == 1 ){ console.log( shared_name_list[i] ); }
+            if( debug > 1 ){ console.log( shared_name_list[i] ); }
         }
 
         // create shared panel
@@ -862,11 +809,9 @@ function init()
         var file;
         for( c=cmin; c<=cmax; c++ )
         {
-//            var path_str = "";
             var path_str = img_dir;
             if( path_str !== "" ){ path_str = path_str + "/"; }
 
-//            for( i=0; i<path[c].length; i++ )
             for( i=1; i<path[c].length; i++ )
             {
                 path_str += path[c][i] + "/";
@@ -890,11 +835,9 @@ function init()
                     var c = changeId[1];
                     var i = changeId[2];
                     var id = "img-" + c + "-" + i;
-//                    id].width = document[id].naturalWidth * zoom_fnames[c];
                     changeSize(c);
 
 //                    document[id].width = document.getElementById( 'div_panel-' + c ).clientWidth;
-
 //                    document[id].style.setProperty( "visibility", "visible" );
                     document.getElementById(id).style.setProperty( "visibility", "visible" );
                 });
@@ -916,23 +859,18 @@ function init()
     {
         $( "select.xmlTree" ).off( "change" );
         $( "select.xmlTree" ).on( "change", onChangeXmlTree );
-//        $("select.xmlTree").change( onChangeXmlTree );
 
         $( "input.conpp" ).off( "click" );
         $( "input.conpp" ).on( "click", onAddCon );
-//        $("input.conpp").click( onAddCon );
 
         $( "input.conmm" ).off( "click" );
         $( "input.conmm" ).on( "click", onDelCon );
-//        $("input.conmm").click( onDelCon );
 
         $( "input.sizepp" ).off( "click" );
         $( "input.sizepp" ).on( "click", onMagnifySize );
-//        $("input.sizepp").click( onMagnifySize );
 
         $( "input.sizemm" ).off( "click" );
         $( "input.sizemm" ).on( "click", onReduceSize );
-//        $("input.sizemm").click( onReduceSize );
 
         $( "select.shared_selects" ).off( "change" );
         $( "select.shared_selects" ).on( "change", onChangeSharedSelects );
@@ -940,57 +878,32 @@ function init()
     // just for one time
     function registerStaticEvents()
     {
-//        $("#sync").change( onChangeSync );
     }
 
 
     function onChangeSharedSelects()
     {
-//        console.log( "onChangeSharedSelects() starts" );
+        if( debug > 0 ){ console.log( "onChangeSharedSelects() starts" ); }
         var mySelect = $(this).children("option:selected").attr("value");
         var changeId = $(this).attr("id").split("_");
-
         changeSharedSelects( changeId[2], mySelect );
-
-/*
-        for( var c=0; c<=path.length-1; c++ )
-        {
-            for( var i=1; i<=path[c].length-1; i++ )
-            {
-                if( child_type[c][i-1] == changeId[2] )
-                {
-                    xml2path( { c: c, depth: i, name: mySelect } );
-                    console.log( c + " : " + changeId[2] + " : " + mySelect );
-                    path2panels( 0, c );
-                    break;
-                }
-            }
-        }
-*/
     }
 
     function changeSharedSelects( type, mySelect )
     {
-//        console.log( "onChangeSharedSelects() starts" );
-//        var mySelect = $(this).children("option:selected").attr("value");
-//        var changeId = $(this).attr("id").split("_");
-
         for( var c=0; c<=path.length-1; c++ )
         {
             for( var i=1; i<=path[c].length-1; i++ )
             {
-//                if( child_type[c][i-1] == changeId[2] )
                 if( child_type[c][i-1] == type )
                 {
                     xml2path( { c: c, depth: i, name: mySelect } );
-//                    console.log( c + " : " + changeId[2] + " : " + mySelect );
                     path2panels( 0, c );
                     break;
                 }
             }
         }
     }
-
 
     function onChangeXmlTree()
     {
@@ -1002,7 +915,6 @@ function init()
 //        path2panels();
         path2panels( 0, changeId[1] );
     }
-
     
     function addCon()
     {
@@ -1067,12 +979,10 @@ function init()
     {
         var c_del = parseInt( $(this).attr("id").split("-")[1] );  // conmm-c
         var c, i;
-//        console.log( "con: " + c_del);
 
         // move
         for( c=c_del+1; c<=path.length-1; c++ )
         {
-//            console.log( "c = " + c );
             for( i=0; i<path[c].length; i++ )
             {
                 path[c-1][i]   = path[c][i];
@@ -1113,10 +1023,7 @@ function init()
         for( var i=0; i<fnames[c].length; i++ )
         {
             var id = id_parent + "-" + i
-//            document[id].width = document[id].naturalWidth * zoom_fnames[c];
-//            document[id].width = document.getElementById( 'div_panel-' + c ).clientWidth;
             document.getElementById(id).width = document.getElementById( 'div_panel-' + c ).clientWidth;
-
         }
     }
     function onReduceSize()
@@ -1129,21 +1036,16 @@ function init()
         for( var i=0; i<fnames[c].length; i++ )
         {
             var id = id_parent + "-" + i
-//            document[id].width = document[id].naturalWidth * zoom_fnames[c];
-//            document[id].width = document.getElementById( 'div_panel-' + c ).clientWidth;
             document.getElementById(id).width = document.getElementById( 'div_panel-' + c ).clientWidth;
-}
+        }
     }
     function onResize(e)
     {
-//        console.log(e);
-//        console.log(e.target.id);
         var c = parseInt( e.target.id.split("-")[1] );
         changeSize(c)
     }
     function changeSize(c)
     {
-//console.log(c);
         var id_parent = "img-" + c;
 //        var panel_width = panel_width_default * zoom_fnames[c];
 //        document.getElementById( 'div_panel-' + c ).style.setProperty( "width", panel_width + "%" );
@@ -1180,17 +1082,13 @@ function init()
 
     function onShiftSharedMenu( eo )
     {
-//        console.log( $(this).attr("id") );
         var changeId = $(this).attr("id").split("_");
         var changeOpe  = changeId[2]; // "pp" or "mm"
         var changeType = changeId[3];
         var changeValue = $( '#shared_select_' + changeType ).children("option:selected").attr("value");
-//        console.log( changeValue );
-
         var opt = document.getElementById( 'shared_select_' + changeType ).options;
         for( var i=0; i<=opt.length-1; i++ )
         {
-//            console.log( opt[i].value );
             if( opt[i].value == changeValue )
             {
                 var it = i;
@@ -1283,45 +1181,4 @@ function init()
         path2panels( 0, c );
 
     }
-
-/*
-    function onChangeSync()
-    {
-//        console.log( "onChangeSync" );
-        if( $(this).prop("checked") )
-        {
-            flag_sync = 1;
-
-            var path_sync = new Array();
-            for( var c=0; c<path.length; c++ )
-            {
-                for( i=0; i<path[c].length; i++ )
-                {
-                    if( c == 0 ){ path_sync[i] = path[c][i]; sync[i] = 1; }
-                    else if( path_sync[i] != path[c][i] )
-                    { sync[i] = 0; }
-                }
-            }
-//            for( var i=0; i<path_sync.length; i++ ){ console.log( path_sync[i] + " : " + sync[i] ); }
-        }
-        else{ flag_sync = 0; sync.length = 0; }
-
-        if( flag_sync == 1 )
-        {
-            // which menu should be synclonized -> same name among controllers
-//            var sync = new Array();  // =0: no-sync  =1: sync
-            for( i=1; i<=path[0].length-1; i++ ) // i=0: root
-            {
-                sync[i] = 1; // initial: true
-                for( c=0; c<=path.length-1; c++ ) // for all the controllers
-                {
-                    if( path[0][i] != path[c][i] ){ sync[i] = 0; break; }
-                }
-                console.log( "sync (" + i + "): " + sync[i] );
-            }
-        }
-
-        path2panels();
-    }
-*/
 }
