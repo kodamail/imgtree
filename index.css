@@ -14,15 +14,6 @@ body
     padding : 0px;
 }
 
-/*
-#div_sidemenu
-{
-    position : relative;
-    width    : 140px;
-    top      : 0px;
-    margin   : 5px;
-}
-*/
 #div_sidemenu
 {
     position : absolute;
@@ -44,37 +35,47 @@ body
     padding  : 0px;
 }
 
+
 #div_shared_selects
 {
     position : absolute;
     top      : 0px;
     left     : 0px;
     right    : 0px;
-    height   : 50px;
+    height   : 55px;
     margin   : 0px;
     padding  : 3px;
 }
-
 /*
-#div_panel
+#div_shared_selects
 {
-    position : absolute;
-    top      : 0px;
-    left     : 150px;
-    right    : 0px;
-    bottom   : 0px;
+    position : relative;
+    margin   : 0px;
+    padding  : 3px;
 }
 */
 #div_panel
 {
     position : absolute;
-    top      : 50px;
+    top      : 55px;
     left     : 0px;
     right    : 0px;
     bottom   : 0px;
     margin   : 0px;
     padding  : 3px;
 }
+/*
+#div_panel
+{
+    position : relative;
+    top      : 0px;
+    left     : 0px;
+    right    : 0px;
+    bottom   : 0px;
+    margin   : 0px;
+    padding  : 3px;
+}
+*/
 
 .child_panel
 {

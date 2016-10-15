@@ -24,14 +24,14 @@ if( typeof(xml_type_list_filename) == "undefined" )
 if( typeof(xml_disp_list_filename) == "undefined" )
   var xml_disp_list_filename  = img_dir + '/disp.xml';
 
-var panel_width_default = 49;  // in %
+//var panel_width_default = 49;  // in %
 //var panel_width_default = 45;  // in %
 //var panel_width_default = 22;  // in %
 
 // number of panels used only for calculating width and height of panels
-var disp_nx = 3;
+var disp_nx = -1; // auto
 //var disp_ny = 2;
-var disp_ny = 1;
+var disp_ny = -1; // auto
 
 //---------------------------------------------------------------------------//
 //
@@ -118,11 +118,35 @@ function init()
                     path_init[c] = path_list[c].split( "/" );
                 }
             }
-            else if( key == "width" )
+            else if( key == "grid" )  // e.g. 3x2
             {
-                panel_width_default = Number(value);
+                disp_nx = value.split( "x" )[0];
+                disp_ny = value.split( "x" )[1];
             }
         }
+
+        if( disp_nx == -1 || disp_ny == -1 )
+        {
+            if( path_init != undefined )
+            {
+
+            // assume panel is 3:2 (it is tuning parameter)
+//            ar = ( ( panel_width  / 16 ) / ( panel_height / 9 ) );
+//            ar = ( ( panel_width  / 4 ) / ( panel_height / 3 ) );
+                ar = ( ( panel_width  / 3 ) / ( panel_height / 2 ) );
+//            console.log(ar);
+                ar2 = 0;
+                for( var nx=1; nx<=path_init.length; nx++ )
+                {
+                    var ny = Math.ceil( path_init.length / nx );
+                    //console.log( nx + " : " + ny + " -> " + nx/ny );
+                    if( Math.abs( ar / (nx / ny) - 1 ) < Math.abs( ar / ar2 - 1 ) )
+                    { ar2 = nx / ny; disp_nx = nx; disp_ny = ny; }
+                }
+            }
+            else{ disp_nx = 1; disp_ny = 1; }
+        }
+
     })();
 
     //
@@ -474,6 +498,8 @@ function init()
             for( var i=1; i<path[c].length; i++ ){ href += "/" + path[c][i]; }
         }
         document.getElementById( "a_reload" ).href = href;
+//        $( "a_reload" ).draggable();
+        console.log( $( "a_reload" ) );
 
         if( cmin == cmax ){ draw(cmin); }
         else{ draw(); }
@@ -494,7 +520,7 @@ function init()
                 onResize(e);
             }, 200 );
         });
-
+        onChangeFlexiblePanel();
     }
 
     function initPanel( c )
@@ -510,9 +536,9 @@ function init()
 */
         var cx = c % disp_nx;
         var cy = Math.floor( c / disp_nx );
-//        console.log( "  " + panel_width + " : " + panel_height );
-//        console.log( "  " + cx + " / " + disp_nx + " : " + cy + " / " + disp_ny );
-//        console.log( "  " + cx * panel_width / disp_nx );
+        console.log( "  " + panel_width + " : " + panel_height );
+        console.log( "  " + cx + " / " + disp_nx + " : " + cy + " / " + disp_ny );
+        console.log( "  " + cx * panel_width / disp_nx );
 
         var left = cx * panel_width / disp_nx;
         var top  = cy * panel_height / disp_ny;
@@ -878,6 +904,9 @@ function init()
     // just for one time
     function registerStaticEvents()
     {
+//        $( "flexible" ).prop( 'checked', true ).trigger( 'change' );
+        $( "#flexible" ).off( "change" );
+        $( "#flexible" ).on(  "change", onChangeFlexiblePanel );
     }
 
     function onChangeSharedSelects()
@@ -914,6 +943,21 @@ function init()
 //        path2panels();
         path2panels( 0, changeId[1] );
     }
+
+    function onChangeFlexiblePanel()
+    {
+        if( $("#flexible").prop("checked") == true )
+        {
+            $( ".panel" ).draggable( 'enable' );
+            $( ".panel" ).resizable( 'enable' );
+        }
+        else
+        {
+            $( ".panel" ).draggable( 'disable' );
+            $( ".panel" ).resizable( 'disable' );
+        }
+    }
+
     
     function addCon()
     {
