@@ -276,6 +276,12 @@ function init()
             if( path_init[c] != undefined )
             {
                 for( var i=0; i<path_init[c].length; i++ ){ path_prev[i] = path_init[c][i]; }
+/*
+                for( var i=0; i<path_init[c].length; i++ )
+                {
+                    if( path_init[c][i] != "*" ){ path_prev[i] = path_init[c][i]; }
+                }
+*/
                 path_init[c].length = 0;
             }
         }
@@ -500,6 +506,40 @@ function init()
         document.getElementById( "a_reload" ).href = href;
 //        $( "a_reload" ).draggable();
         console.log( $( "a_reload" ) );
+
+        // test
+        for ( var key in ln_link )
+        {
+            console.log( key + ' : ' + ln_link[key] + ' : ' + ln_name[key] )
+            if( $('#' + key).length == 0 ){ continue; }
+            var link = ln_link[key];
+            for( var i=1; i<=path[cmin].length-1; i++ ) // i=0: root
+            {
+                var tmp_type = child_type[cmin][i-1];
+                var tmp_value = path[cmin][i];
+                var re = new RegExp( '\\${' + tmp_type + '}', 'g' );
+                link = link.replace( re, tmp_value )
+            }
+//            console.log( link );
+            $('#' + key).html('<a href="index.html?path=' + link + '">' + ln_name[key] + '</a>');
+        }
+
+/*
+        if( $('#ln_testprecip').length > 0 )
+        {
+            var link = ln_link['ln_testprecip'];
+            for( var i=1; i<=path[cmin].length-1; i++ ) // i=0: root
+            {
+                var tmp_type = child_type[cmin][i-1];
+                var tmp_value = path[cmin][i];
+                var re = new RegExp( '\\${' + tmp_type + '}', 'g' );
+                link = link.replace( re, tmp_value )
+            }
+            console.log( link );
+            $('#ln_testprecip').html('<a href="index.html?path=' + link + '">' + ln_name['ln_testprecip'] + '</a>');
+        }
+*/
+        // test ここまで
 
         if( cmin == cmax ){ draw(cmin); }
         else{ draw(); }
