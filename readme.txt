@@ -5,9 +5,9 @@
 
   Brief description of install processes is as follows:
 
-(1). Create/copy image files.
-(2). Transfer image files to the local PC, server, etc (if necessary).
-(3). Make index file for the images (perl is necessary).
+(1) Create/copy image files.
+(2) Transfer image files to the local PC, server, etc (if necessary).
+(3) Make index file for the images (perl is necessary).
 
 (2) and (3) can be reversed depending on the availability of Perl.
 
@@ -15,8 +15,8 @@
 ================================================================================
 2. Files in imgtree
 
-index.html
-  Sample html file for browsing. You can use it as is.
+index_*.html
+  Sample html files for browsing. You can use index_default.html as is.
 
 cnf.gs
   Configurations.
@@ -34,11 +34,11 @@ js/
 ================================================================================
 3. Install
 
-First, let's think of your situation to use imgtree. For example,
+First, think of your situation to use imgtree. For example,
 
-(A) Create image files on a workstation and put image files on the public server for browsing.
+(A) Create image files on a workstation and put image files on a public server for browsing.
 
-(B) Create image files on a workstation and put image files on the laptop PC for local browsing.
+(B) Create image files on a workstation and put image files on a laptop PC for local browsing.
 
 (C) Create image files and browse them on a local PC.
 
@@ -61,7 +61,7 @@ Then execute img2xml.cgi to create index file written in xml format.
  $ ./img2xml.cgi
 Please check that list.xml is created in the parent directory of img_dir.
 
-Finally, copy all the files in myimgtree/ to BRO-SERVER and see index.html. Browse index.html to check.
+Finally, copy all the files in myimgtree/ to BRO-SERVER and see index.html. Browse index_default.html to check.
 
 Tips: img2xml.cgi can be run on BRO-SERVER instead of FIG-SERVER. If BRO-SERVER is a webserver, running img2xml.cgi on BRO-SERVER is often easier than on FIG-SERVER. Note that img2xml.cgi can be also run on CGI mode if BRO-SERVER permit CGI execution.
 
@@ -97,7 +97,7 @@ Type is specified in .type file in each directory. In the above example, followi
 
 4.3 Display style
 
-By configuring disp.xml (in usr/default/ by default), an appearance of the web can be changed. Sample file (mainly for NICAM team people) put in usr/nicam/ may be also helpful even for non-NICAM people.
+By configuring disp.xml (in usr/default/ by default), an appearance of the web can be changed. Sample file in usr/nicam/ (mainly for NICAM) may be also helpful even for non-NICAM people.
 
 Structure of disp_list.xml is as follows:
 

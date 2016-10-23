@@ -13,15 +13,16 @@
 var img_dir = './img';
 
 // comment out below if you prepare your own in img_dir
-//var xml_type_list_filename = 'usr/default/type.xml';
-//var xml_disp_list_filename = 'usr/default/disp.xml';
-//var cnf_filename           = '';
-var xml_type_list_filename = 'usr/nicam/type.xml';
-var xml_disp_list_filename = 'usr/nicam/disp.xml';
-var cnf_filename           = 'usr/nicam/cnf.js';
+var xml_type_list_filename = 'usr/default/type.xml';
+var xml_disp_list_filename = 'usr/default/disp.xml';
+var cnf_filename           = '';
+//var xml_type_list_filename = 'usr/nicam/type.xml';
+//var xml_disp_list_filename = 'usr/nicam/disp.xml';
+//var cnf_filename           = 'usr/nicam/cnf.js';
 
 // comment in when debug mode
-var debug = 1;
+var debug = 0;
+//var debug = 1;
 
 var ln_name = {};
 var ln_link = {};
