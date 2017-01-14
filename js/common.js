@@ -496,7 +496,8 @@ function init()
         createSharedPanel( obj_tmp );
         
         // set link for re-load
-        var href = "index.html?path=";
+//        var href = "index.html?path=";
+        var href = "?path=";
         for( var c=0; c<path.length; c++ )
         {
             if( c > 0 ){ href += ","; }
