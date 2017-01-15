@@ -46,14 +46,7 @@ body
     margin   : 0px;
     padding  : 3px;
 }
-/*
-#div_shared_selects
-{
-    position : relative;
-    margin   : 0px;
-    padding  : 3px;
-}
-*/
+/*    height   : 55px;*/
 #div_panel
 {
     position : absolute;
@@ -64,18 +57,6 @@ body
     margin   : 0px;
     padding  : 3px;
 }
-/*
-#div_panel
-{
-    position : relative;
-    top      : 0px;
-    left     : 0px;
-    right    : 0px;
-    bottom   : 0px;
-    margin   : 0px;
-    padding  : 3px;
-}
-*/
 
 .child_panel
 {

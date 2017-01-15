@@ -6,32 +6,30 @@
 //---------------------------------------------------------------------------//
 //
 // debug: set >1 when debugging
-if( typeof(debug) == "undefined" )
+if( typeof(debug) == 'undefined' )
   var debug = 0;
 //
 // top directory of image files
-if( typeof(img_dir) == "undefined" )
+if( typeof(img_dir) == 'undefined' )
   var img_dir = './img';
 //
 // list of image files in xml
-if( typeof(xml_tree_filename) == "undefined" )
+if( typeof(xml_tree_filename) == 'undefined' )
   var xml_tree_filename = img_dir + '/../list.xml';
 xml_tree_filename = xml_tree_filename.replace( /[^\/]+\/\.\.\//g, "" );
 //
 // xml files for directory tree and type
-if( typeof(xml_type_list_filename) == "undefined" )
+if( typeof(xml_type_list_filename) == 'undefined' )
   var xml_type_list_filename = img_dir + '/type.xml';
-if( typeof(xml_disp_list_filename) == "undefined" )
+if( typeof(xml_disp_list_filename) == 'undefined' )
   var xml_disp_list_filename  = img_dir + '/disp.xml';
 
-//var panel_width_default = 49;  // in %
-//var panel_width_default = 45;  // in %
-//var panel_width_default = 22;  // in %
-
 // number of panels used only for calculating width and height of panels
-var disp_nx = -1; // auto
+// -1: auto
+var disp_nx = -1, disp_ny = -1;
 //var disp_ny = 2;
-var disp_ny = -1; // auto
+
+var sync_panel = 1;
 
 //---------------------------------------------------------------------------//
 //
@@ -52,11 +50,10 @@ function init()
     var xmlTypeList;
     var xmlTree;
     //
-    //
     // path[c][n]: path for selected menu
     //   c: the number of controler (=0 for the first controller)
     //   n: the number of select box for each c
-    var path   = []; path[0]   = [];
+    var path = []; path[0] = [];
     //
     // fnames[c][i]: filename of image files in path[c][]
     //   c: the number of controler (=0 for the first controller)
@@ -72,83 +69,71 @@ function init()
     //   n: the number of select box for each c
     var child_type   = []; child_type[0]   = [];
     //
-    // shared_type[i][j]: types common to all the controllers
-    //   i: index for type. i>0.
-    //   j: names for each type. j>0.
-//    var shared_type = []; shared_type[0] = []; // TODO: implement!
-    //
-//    // path_running[c][n]: running title for path[c][n]
-//    var path_running = []; path_running[0] = [];
-    //
-//    var panel_clientWidth_init = 0;
-//    var panel_offsetWidth_init = 0;
-
     // panel width and height for displaying (because of the dependency on existence of scroll bar etc)
     var panel_width  = Number( document.getElementById( 'div_panel' ).clientWidth  ) - 20; // width + padding - 20 (for scroll)
     var panel_height = Number( document.getElementById( 'div_panel' ).clientHeight ) - 10; // height + padding
-
+    //
     // padding and margin for child panel
     var cpanel_padding = 3;
     var cpanel_margin_for_border = 8;
-
+    //
     // set initial value (from url)
     var path_init;
     (function()
     {
-        var args = location.href.split( "?" );
+        var args = location.href.split( '?' );
         arg = new Array();
         if( 1 in args )
         {
-            arg = args[1].split( "&" );
+            arg = args[1].split( '&' );
         }
-        if( debug > 0 ){ console.log( "Arguements from url" ); }
+        if( debug > 0 ){ console.log( 'Arguements from url' ); }
         for( var depth=0; depth<=arg.length-1; depth++ )
         {
-            var temp = arg[depth].split( "=" );
+            var temp = arg[depth].split( '=' );
             var key = temp[0];
             if( 1 in temp ){ value = temp[1]; }
             else{ value = ""; }
-            if( debug > 0 ){ console.log( "  " + key + " : " + value ); }
-            if( key == "path" )
+            if( debug > 0 ){ console.log( '  ' + key + ' : ' + value ); }
+            if( key == 'path' )
             {
                 path_init = [];
                 path_list = value.split( "," );
                 for( var c=0; c<path_list.length; c++ )
                 {
-                    path_init[c] = path_list[c].split( "/" );
+                    path_init[c] = path_list[c].split( '/' );
                 }
             }
-            else if( key == "grid" )  // e.g. 3x2
+            else if( key == 'grid' )  // e.g. 3x2
             {
-                disp_nx = value.split( "x" )[0];
-                disp_ny = value.split( "x" )[1];
+                disp_nx = value.split( 'x' )[0];
+                disp_ny = value.split( 'x' )[1];
+            }
+            else if( key == 'sync_panel' ) // 0 or 1
+            {
+                sync_panel = value;
+                if( sync_panel == 0 ){ $( '#chk_panel_sync' ).prop( 'checked', false );}
+                else                 { $( '#chk_panel_sync' ).prop( 'checked', true );}
             }
         }
-
+        //
         if( disp_nx == -1 || disp_ny == -1 )
         {
             if( path_init != undefined )
             {
-
-            // assume panel is 3:2 (it is tuning parameter)
-//            ar = ( ( panel_width  / 16 ) / ( panel_height / 9 ) );
-//            ar = ( ( panel_width  / 4 ) / ( panel_height / 3 ) );
+                // assume panel is 3:2 (it is tuning parameter)
                 ar = ( ( panel_width  / 3 ) / ( panel_height / 2 ) );
-//            console.log(ar);
                 ar2 = 0;
                 for( var nx=1; nx<=path_init.length; nx++ )
                 {
                     var ny = Math.ceil( path_init.length / nx );
-                    //console.log( nx + " : " + ny + " -> " + nx/ny );
                     if( Math.abs( ar / (nx / ny) - 1 ) < Math.abs( ar / ar2 - 1 ) )
                     { ar2 = nx / ny; disp_nx = nx; disp_ny = ny; }
                 }
             }
             else{ disp_nx = 1; disp_ny = 1; }
         }
-
     })();
-
     //
     //---------------------------------------------------//
     //
@@ -162,10 +147,10 @@ function init()
     })();
     function init2()
     {
-        console.log( "Loading xml_disp_list (" + xml_disp_list_filename + ")" );
+        console.log( 'Loading xml_disp_list (' + xml_disp_list_filename + ')' );
         $.ajax
         ({
-            url      : xml_disp_list_filename + "?rand=" + Math.random(),
+            url      : xml_disp_list_filename + '?rand=' + Math.random(),
             type     : 'get',
             dataType : 'xml',
             timeout  : 100000,
@@ -175,17 +160,17 @@ function init()
         });
         function setXmlDispList( xml, status )
         {
-            console.log( "  xml_disp_list is loaded." );
+            console.log( '  xml_disp_list is loaded.' );
             xmlDispList = xml;
             init3();
         }
     }
     function init3()
     {
-        console.log( "Loading xml_type_list (" + xml_type_list_filename + ")" );
+        console.log( 'Loading xml_type_list (' + xml_type_list_filename + ')' );
         $.ajax
         ({
-            url      : xml_type_list_filename + "?rand=" + Math.random(),
+            url      : xml_type_list_filename + '?rand=' + Math.random(),
             type     : 'get',
             dataType : 'xml',
             timeout  : 100000,
@@ -195,7 +180,7 @@ function init()
         });
         function setxmlTypeList( xml, status )
         {
-            console.log( "  xml_type_list is loaded." );
+            console.log( '  xml_type_list is loaded.' );
             xmlTypeList = xml;
             init4();
         }
@@ -209,10 +194,10 @@ function init()
     //
     function init4()
     {
-        console.log( "Loading xml_tree (" + xml_tree_filename + ")" );
+        console.log( 'Loading xml_tree (' + xml_tree_filename + ')' );
         $.ajax
         ({
-            url      : xml_tree_filename + "?rand=" + Math.random(),
+            url      : xml_tree_filename + '?rand=' + Math.random(),
             type     : 'get',
             dataType : 'xml',
             timeout  : 100000,
@@ -222,7 +207,7 @@ function init()
         });
         function setXmlTree( xml, status )
         {
-            console.log( "  xml_tree is loaded." );
+            console.log( '  xml_tree is loaded.' );
             xmlTree = xml;
             //
             // xml -> path
@@ -241,7 +226,7 @@ function init()
             path2panels();
             //
             // register evenst
-            registerStaticEvents()
+            registerStaticEvents();
         }
     }
     //
@@ -292,13 +277,13 @@ function init()
         {
             // check for the previous values
             var flag = 0;
-            target.children("dir").each( function()
+            target.children('dir').each( function()
             {
-                if( $(this).attr("name") == path_prev[path[c].length] )
+                if( $(this).attr('name') == path_prev[path[c].length] )
                 {
-                    path[c][path[c].length]             = $(this).attr("name");
-                    if( $(this).attr("child_type") != "" ){ child_type[c][child_type[c].length] = $(this).attr("child_type"); }
-                    else                                  { child_type[c][child_type[c].length] = "none_" + child_type[c].length; }
+                    path[c][path[c].length]             = $(this).attr('name');
+                    if( $(this).attr('child_type') != '' ){ child_type[c][child_type[c].length] = $(this).attr('child_type'); }
+                    else                                  { child_type[c][child_type[c].length] = 'none_' + child_type[c].length; }
                     flag = 1;
                     init_path( $(this) );
                     return false;
@@ -308,23 +293,23 @@ function init()
             // check for xmlTypeList (order of values)
             if( flag == 0 )
             {
-                var attr_head = "";
-                if( target.attr("child_type") != undefined )
+                var attr_head = '';
+                if( target.attr('child_type') != undefined )
                 {
-                    attr_head = target.attr("child_type").split("-")[0]; // e.g. run-1 -> run
+                    attr_head = target.attr('child_type').split('-')[0]; // e.g. run-1 -> run
                 }
-                var tmp = $(xmlTypeList).children("type_list").children("type").filter("[ name |= '" + attr_head + "' ]");
-                tmp.children("value").each(function()
+                var tmp = $(xmlTypeList).children('type_list').children('type').filter("[ name |= '" + attr_head + "' ]");
+                tmp.children('value').each(function()
                 {
-                    var $attr = $(this).attr("name"); // <value name="...">
+                    var $attr = $(this).attr('name'); // <value name="...">
 
-                    target.children("dir").each( function() // loop ONLY for the first element
+                    target.children('dir').each( function() // loop ONLY for the first element
                     {
-                        if( $(this).attr("name") == $attr )
+                        if( $(this).attr('name') == $attr )
                         {
-                            path[c][path[c].length]             = $(this).attr("name");
-                            if( $(this).attr("child_type") != "" ){ child_type[c][child_type[c].length] = $(this).attr("child_type"); }
-                            else                                  { child_type[c][child_type[c].length] = "none_" + child_type[c].length; }
+                            path[c][path[c].length]             = $(this).attr('name');
+                            if( $(this).attr('child_type') != '' ){ child_type[c][child_type[c].length] = $(this).attr('child_type'); }
+                            else                                  { child_type[c][child_type[c].length] = 'none_' + child_type[c].length; }
                             init_path( $(this) );
                             flag = 1;
                             return false; // just one time
@@ -338,22 +323,22 @@ function init()
             if( flag == 0 )
             {
                 // first element will be adopted
-                target.children("dir").each( function() // loop ONLY for the first element
+                target.children('dir').each( function() // loop ONLY for the first element
                 {
-                    path[c][path[c].length]                 = $(this).attr("name");
-                    if( $(this).attr("child_type") != "" ){ child_type[c][child_type[c].length] = $(this).attr("child_type"); }
-                    else                                  { child_type[c][child_type[c].length] = "none_" + child_type[c].length; }
+                    path[c][path[c].length]                 = $(this).attr('name');
+                    if( $(this).attr('child_type') != '' ){ child_type[c][child_type[c].length] = $(this).attr('child_type'); }
+                    else                                  { child_type[c][child_type[c].length] = 'none_' + child_type[c].length; }
                     init_path( $(this) );
                     return false; // just one time
                 });
             }
             //
-            if( ! target.children("dir").is("dir") ) // -> false if child "dir" does not exist.
+            if( ! target.children('dir').is('dir') ) // -> false if child "dir" does not exist.
             {
                 fnames[c].length = 0;
-                target.children("file").each( function()
+                target.children('file').each( function()
                 {
-                    fnames[c][fnames[c].length] = $(this).attr("name");
+                    fnames[c][fnames[c].length] = $(this).attr('name');
                 });
             }
         } // init_path end
@@ -362,30 +347,20 @@ function init()
         path[c].length         = depth;
         child_type[c].length   = depth;
         //
-        var tmp = $(xmlTree).children("tree");
+        var tmp = $(xmlTree).children('tree');
         if( depth > 0 )
         {
-            tmp = tmp.children("dir");
-//        var idx        = menu_name[c][i].indexOf(path[c][i]);
-//            if( menu_name[c][depth].indexOf(name) )
-//            console.log( menu_name[c][depth].indexOf(name) );
-//            if( menu_name[c][depth].indexOf(name) < 0 )
-//            {
-//                path[c][depth] = menu_name[c][depth][menu_name[c][depth].indexOf(path_prev[depth]) + inc]; // 未チェック, incあふれ処理必要
-//            }
-//            else
-//            {
+            tmp = tmp.children('dir');
             path[c][depth]         = name;
-//            }
             for( var i=1; i<=depth; i++ ) // seek to the specified depth
             {
                 tmp = tmp.children( "[ name = '" + path[c][i] + "' ]" );
             }
-            child_type[c][depth] = tmp.attr("child_type");
+            child_type[c][depth] = tmp.attr('child_type');
         }
         init_path( tmp );
     }
-
+    //
     //---------------------------------------------------//
     //
     // xml, path -> menu
@@ -404,7 +379,7 @@ function init()
             menu_name[c]    = [];
             menu_running[c] = [];
             menu_desc[c]    = [];
-            target = $(xmlTree).children("tree").children("dir");
+            target = $(xmlTree).children('tree').children('dir');
 
             for( i=1; i<=path[c].length-1; i++ ) // i=0: root
             {
@@ -412,44 +387,44 @@ function init()
                 menu_running[c][i] = [];
                 menu_desc[c][i]    = [];
                 //
-                target.children("dir").each(function()
+                target.children('dir').each(function()
                 {
-                    menu_name[c][i][menu_name[c][i].length]       = $(this).attr("name");
-                    menu_running[c][i][menu_running[c][i].length] = $(this).attr("name");
-                    menu_desc[c][i][menu_desc[c][i].length]       = "";
+                    menu_name[c][i][menu_name[c][i].length]       = $(this).attr('name');
+                    menu_running[c][i][menu_running[c][i].length] = $(this).attr('name');
+                    menu_desc[c][i][menu_desc[c][i].length]       = '';
                 });
-
+                //
                 // overwrite menu_running/menu_desc following xmlTypeList
                 for( j=0; j<=menu_name[c][i].length-1; j++ )
                 {
-                    attr_head = "";
-                    if( target.attr("child_type") != undefined )
+                    attr_head = '';
+                    if( target.attr('child_type') != undefined )
                     {
-                        attr_head = target.attr("child_type").split("-")[0]; // e.g. run-1 -> run
+                        attr_head = target.attr('child_type').split('-')[0]; // e.g. run-1 -> run
                     }
-                    tmp = $(xmlTypeList).children("type_list").children("type").filter("[ name |= '" + attr_head + "' ]");
-                    tmp = tmp.children("value").filter("[ name = '" + menu_name[c][i][j] + "' ]");
+                    tmp = $(xmlTypeList).children('type_list').children('type').filter("[ name |= '" + attr_head + "' ]");
+                    tmp = tmp.children('value').filter("[ name = '" + menu_name[c][i][j] + "' ]");
 
                     tmp.children("*").each(function()
                     {
-                        if( $(this)[0].tagName === "running" )
+                        if( $(this)[0].tagName === 'running' )
                         {
                             menu_running[c][i][j] = $(this).text();
                         }
-                        else if( $(this)[0].tagName === "description" || $(this)[0].tagName === "desc" )
+                        else if( $(this)[0].tagName === 'description' || $(this)[0].tagName === 'desc' )
                         {
                             menu_desc[c][i][j] = $(this).text();
                         }
                     });
                 }
-
+                //
                 // re-arrange menu_name[c][i] following xmlTypeList
-                attr_head = child_type[c][i-1].split("-")[0]; // e.g. run-1 -> run
-                tmp = $(xmlTypeList).children("type_list").children("type").filter("[ name |= '" + attr_head + "' ]");
+                attr_head = child_type[c][i-1].split('-')[0]; // e.g. run-1 -> run
+                tmp = $(xmlTypeList).children('type_list').children('type').filter("[ name |= '" + attr_head + "' ]");
                 pos = 0; // position to insert
-                tmp.children("value").each(function()
+                tmp.children('value').each(function()
                 {
-                    pos_old = menu_name[c][i].indexOf( $(this).attr("name") );
+                    pos_old = menu_name[c][i].indexOf( $(this).attr('name') );
                     if( pos_old > pos )
                     {
                         menu_name[c][i].splice( pos, 0, menu_name[c][i][pos_old] );
@@ -464,10 +439,9 @@ function init()
                 target = target.children( "[ name = '" + path[c][i] + "' ]" );
             } // i loop ends
         } // c loop ends
-//        return menu_name;
         return { menu_name: menu_name, menu_running: menu_running, menu_desc: menu_desc };
     }
-
+    //
     //---------------------------------------------------//
     //
     // xml, path, fnames -> html
@@ -485,7 +459,7 @@ function init()
 
         // put menu to html
         //
-        if( initFlag == 1 ){ $("#div_panel").html( '' ); } // clear main panel
+        if( initFlag == 1 ){ $('#div_panel').html( '' ); } // clear main panel
         //
         // for each controller
         for( c=cmin; c<=cmax; c++ )
@@ -497,21 +471,20 @@ function init()
         
         // set link for re-load
 //        var href = "index.html?path=";
-        var href = "?path=";
+        var href = '?path=';
         for( var c=0; c<path.length; c++ )
         {
             if( c > 0 ){ href += ","; }
             href += path[c][0]
-            for( var i=1; i<path[c].length; i++ ){ href += "/" + path[c][i]; }
+            for( var i=1; i<path[c].length; i++ ){ href += '/' + path[c][i]; }
         }
-        document.getElementById( "a_reload" ).href = href;
-//        $( "a_reload" ).draggable();
-        console.log( $( "a_reload" ) );
+        document.getElementById( 'a_reload' ).href = href;
+//        console.log( $( "a_reload" ) );
 
-        // test
+        // create link for particular figure scene
         for ( var key in ln_link )
         {
-            console.log( key + ' : ' + ln_link[key] + ' : ' + ln_name[key] )
+            if( debug > 0 ){ console.log( key + ' : ' + ln_link[key] + ' : ' + ln_name[key] ); }
             if( $('#' + key).length == 0 ){ continue; }
             var link = ln_link[key];
             for( var i=1; i<=path[cmin].length-1; i++ ) // i=0: root
@@ -522,40 +495,23 @@ function init()
                 link = link.replace( re, tmp_value )
             }
 //            console.log( link );
-            $('#' + key).html('<a href="index.html?path=' + link + '">' + ln_name[key] + '</a>');
+            $( '#' + key ).html( '<a href="index.html?path=' + link + '">' + ln_name[key] + '</a>' );
         }
-
-/*
-        if( $('#ln_testprecip').length > 0 )
-        {
-            var link = ln_link['ln_testprecip'];
-            for( var i=1; i<=path[cmin].length-1; i++ ) // i=0: root
-            {
-                var tmp_type = child_type[cmin][i-1];
-                var tmp_value = path[cmin][i];
-                var re = new RegExp( '\\${' + tmp_type + '}', 'g' );
-                link = link.replace( re, tmp_value )
-            }
-            console.log( link );
-            $('#ln_testprecip').html('<a href="index.html?path=' + link + '">' + ln_name['ln_testprecip'] + '</a>');
-        }
-*/
-        // test ここまで
-
+        //
         if( cmin == cmax ){ draw(cmin); }
         else{ draw(); }
-
+        //
         registerDynamicEvents();  // re-register events
-
+        //
         // make panel draggable and resizable
-        $( ".panel" ).draggable();
-        $( ".panel" ).resizable( { handles: "all" } );
+        $( '.panel' ).draggable();
+        $( '.panel' ).resizable( { handles: 'all' } );
         var timer_panel = false;
-
-        $( ".panel" ).off( "resize" );
-        $( ".panel" ).on( "resize", function(e,ui)
+        //
+        $( '.panel' ).off( 'resize' );
+        $( '.panel' ).on(  'resize', function( e, ui )
         {
-            if( timer_panel !== false ){ clearTimeout(timer_panel); }
+            if( timer_panel !== false ){ clearTimeout( timer_panel ); }
             timer_panel = setTimeout(function()
             {
                 onResize(e);
@@ -563,42 +519,40 @@ function init()
         });
         onChangeFlexiblePanel();
     }
-
+    //
+    //---------------------------------------------------//
+    //
+    // ...
+    //
+    //---------------------------------------------------//
     function initPanel( c )
     {
         if( debug > 0 ){ console.log( "Start initPanel(" + c + ")" ); }
-/*
-        var cmax = Math.floor( 100 / panel_width_default );
-        var top = 50 * Math.floor(c / cmax);
-        var left = (c % cmax) * (panel_width_default + 1);
-        $("#div_panel").append( '<div id="div_panel-' + c + '" class="ui-widget-content panel" style="border-style: solid; position: absolute; left: ' + left + '%; top: ' + top + '%; background-color: #DDDDDD;"><div id="cpanel_div-' + c + '"></div></div>' );
-        document.getElementById( 'div_panel-' + c ).style.setProperty( "width", panel_width_default + '%' );
-        document.getElementById( 'div_panel-' + c ).style.setProperty( "height", '98%' );
-*/
         var cx = c % disp_nx;
         var cy = Math.floor( c / disp_nx );
-        console.log( "  " + panel_width + " : " + panel_height );
-        console.log( "  " + cx + " / " + disp_nx + " : " + cy + " / " + disp_ny );
-        console.log( "  " + cx * panel_width / disp_nx );
-
+        if( debug > 0 )
+        {
+            console.log( "  " + panel_width + " : " + panel_height );
+            console.log( "  " + cx + " / " + disp_nx + " : " + cy + " / " + disp_ny );
+            console.log( "  " + cx * panel_width / disp_nx );
+        }
         var left = cx * panel_width / disp_nx;
         var top  = cy * panel_height / disp_ny;
         var pwidth = panel_width / disp_nx - 2 * cpanel_padding - cpanel_margin_for_border;
         var pheight= panel_height / disp_ny - 2 * cpanel_padding - cpanel_margin_for_border;
-
-        $("#div_panel").append( '<div id="div_panel-' + c + '" class="ui-widget-content panel child_panel" style="left: ' + left + 'px; top: ' + top + 'px; width: ' + pwidth + 'px; height: ' + pheight + 'px; padding: ' + cpanel_padding + 'px;"><div id="cpanel_div-' + c + '"></div></div>' );
-
-/*
-        $(function() // make it draggable
-        {
-            $( "#div_panel-" + c ).draggable();
-            $( "#div_panel-" + c ).resizable();
-        });
-*/
+        $( '#div_panel' ).append(
+            '<div id="div_panel-' + c 
+          + '" class="ui-widget-content panel child_panel" style="left: ' + left + 'px; top: ' + top + 'px; width: '
+          + pwidth + 'px; height: ' + pheight + 'px; padding: '
+          + cpanel_padding + 'px;"><div id="cpanel_div-' + c + '"></div></div>' );
     }
-
+    //
+    //---------------------------------------------------//
+    //
     // create one panel
     // assume panel itself already exists (i.e., initPanel is already performed).
+    //
+    //---------------------------------------------------//
     function createPanel( path2menuObj, c )
     {
         var menu_name    = path2menuObj.menu_name;
@@ -609,36 +563,34 @@ function init()
         var type_default = 0;
         var i, j, k;
         var disp;
-
+        //
         // add form and drawing field to the controller c's panel
-//        $("#cpanel_div-" + c).html( '<form class="controller" id="form_controller-' + c + '" action="#"></form>' );
-//        $("#cpanel_div-" + c).append( '<div id="div_imgs-' + c + '" style="padding: 0px; margin:0px;"></div>' );
-        $("#div_panel-" + c).html( '<div id="div_controller-' + c + '" class="div_controller"></div>' );
-        $("#div_panel-" + c).append( '<div id="div_imgs-' + c + '" class="div_imgs"></div>' );
-
+        $( '#div_panel-' + c ).html( '<div id="div_controller-' + c + '" class="div_controller"></div>' );
+        $( '#div_panel-' + c ).append( '<div id="div_imgs-' + c + '" class="div_imgs"></div>' );
+        //
         // clear form in a controller c (refresh cache)
-        $("#div_controller-" + c).html( '<form class="controller" id="form_controller-' + c + '" action="#"></form>' );
-        $("#form_controller-" + c).html( '' );
-
+        $( '#div_controller-' + c ).html( '<form class="controller" id="form_controller-' + c + '" action="#"></form>' );
+        $( '#form_controller-' + c).html( '' );
+        //
         // add "+" and "-" buttons for a form
         if( path.length > 1 )
         {
-            $("#form_controller-" + c).append( '<input id="conmm-' + c + '" class="conmm" type="button" value="-">' );
+            $( '#form_controller-' + c ).append( '<input id="conmm-' + c + '" class="conmm" type="button" value="-">' );
         }
         else // disabled button
         {
-            $("#form_controller-" + c).append( '<input id="conmm-' + c + '" class="conmm" type="button" value="-" disabled>' );
+            $( '#form_controller-' + c).append( '<input id="conmm-' + c + '" class="conmm" type="button" value="-" disabled>' );
         }
-        $("#form_controller-" + c).append( '<input id="conpp-' + cpp + '" class="conpp" type="button" value="+">' );
-
+        $( '#form_controller-' + c ).append( '<input id="conpp-' + cpp + '" class="conpp" type="button" value="+">' );
+        //
         // create hash table
-        // to obtain i from child_type[c][i-1] (i.e. obtain index from type)
+        //   to obtain i from child_type[c][i-1] (i.e. obtain index from type)
         var i_type = {};
         for( i=1; i<=menu_name[c].length-1; i++ ) // for each menu
         {
             i_type[child_type[c][i-1]] = i;
         }
-
+        //
         var id_num = 1;
         var size_now = 0; // unit in %
         i = 1;
@@ -650,7 +602,7 @@ function init()
             {
                 var types_target = child_type[c].slice(i-1,k).join("/"); // slice [i-1:k) such as "year" "year/month" etc.
                 disp = $(xmlDispList).children("disp_list").first().children("disp").filter("[ type = '" + types_target + "' ]");
-//                    var disp = $(xmlDispList).children("disp_list").first().children("disp").filter("[ type = '" + types_target + "' ]" || "[ type = 'default' ]");
+//                disp = $(xmlDispList).children("disp_list").first().children("disp").filter("[ type = '" + types_target + "' ]" || "[ type = 'default' ]");
                 type_default = 0;
                 //
                 // internal function
@@ -658,18 +610,18 @@ function init()
                 function type_menu( i )
                 {
                     // get title from xml
-                    var attr_head = child_type[c][i-1].split("-")[0]; // e.g. run-1 -> run
-                    var tmp = $(xmlTypeList).children("type_list").children("type").filter("[ name |= '" + attr_head + "' ]");
-                    var title = "";
-//                        tmp.children("description").each(function()
-                    tmp.children("description,desc").each(function()
+                    var attr_head = child_type[c][i-1].split('-')[0]; // e.g. run-1 -> run
+                    var tmp = $(xmlTypeList).children('type_list').children('type').filter("[ name |= '" + attr_head + "' ]");
+                    var title = '';
+//                    tmp.children("description").each(function()
+                    tmp.children('description,desc').each(function()
                     {
                         title = $(this).text();
                         return false; // just one time
                     });
                     //
                     var id = 'select-' + c + '-' + i;
-                    $("#form_controller-" + c).append( '<select id="' + id + '" class="xmlTree" title="' + title + '"></select>' );
+                    $( '#form_controller-' + c ).append( '<select id="' + id + '" class="xmlTree" title="' + title + '"></select>' );
                     opt = document.getElementById( id ).options;
                     opt.length = 0;
                     for( j=0; j<=menu_name[c][i].length-1; j++ )
@@ -681,69 +633,64 @@ function init()
                         if( menu_name[c][i][j] == path[c][i] )
                         { opt[opt.length-1].selected = true; }
                     }
-                }
-
+                } // end of type_menu()
                 function type_button( attr_type, text, inc, group_type, loop )
                 {
                     var id = 'form-' + c + '-' + id_num;
                     id_num++;
-                    $("#form_controller-" + c).append( '<input id="' + id + '" class="shift" type="button" value="' + text + '">' );
-                    $("#" + id).bind( "click", 
+                    $( '#form_controller-' + c ).append( '<input id="' + id + '" class="shift" type="button" value="' + text + '">' );
+                    $( '#' + id ).bind( 'click', 
                         {
                             c   : c,
-                            i   : i_type[attr_type],    // target type for button
+                            i   : i_type[attr_type], // target type for button
                             inc : inc,
-                            type: group_type,    // type(s) for a group
+                            type: group_type,        // type(s) for a group
                             loop: loop
                         },
                         onShiftMenu 
                     );
-                }
-
-                // insert/don't insert "<br>" by checking size
+                } // end of type_button()
                 //
-                // if <disp type="default"> exists
-                if( typeof disp.attr("type") === "undefined" && k == i )
+                // insert/don't insert "<br>" by checking size
+                //   if <disp type="default"> exists
+                if( typeof disp.attr('type') === 'undefined' && k == i )
                 {
-                    disp = $(xmlDispList).children("disp_list").first().children("disp").filter("[ type = 'default' ]");
-                    if( typeof disp.attr("type") !== "undefined" )
+                    disp = $(xmlDispList).children('disp_list').first().children('disp').filter("[ type = 'default' ]");
+                    if( typeof disp.attr('type') !== 'undefined' )
                     {
-                        disp.attr( "type", child_type[c][i-1] );
+                        disp.attr( 'type', child_type[c][i-1] );
                         type_default = 1;
                     }
                 }
-
                 // default appearance for single type (not specified in disp_list.xml)
-                if( typeof disp.attr("type") === "undefined" && k == i )
+                if( typeof disp.attr('type') === 'undefined' && k == i )
                 {
 //                    insertEnterBySize();
-                    type_button( child_type[c][i-1], "&lt;", -1, child_type[c][i-1], "no" );
+                    type_button( child_type[c][i-1], '&lt;', -1, child_type[c][i-1], 'no' );
                     type_menu( i );
-                    type_button( child_type[c][i-1], "&gt;", +1, child_type[c][i-1], "no" );
+                    type_button( child_type[c][i-1], '&gt;', +1, child_type[c][i-1], 'no' );
                 }
                 //
                 // specified in disp_list.xml
-                else if( typeof disp.attr("type") !== "undefined" )
+                else if( typeof disp.attr('type') !== 'undefined' )
                 {
 //                    insertEnterBySize();
-//                    $("#form_controller-" + c).append( 'S' );
-//                    $("#form_controller-" + c).append( 'S<div id=>' );
                     disp.children("*").each(function() // for all <button>, <menu>
                     {
                         // $(this): from <button>, <menu>
                         // disp   : from <disp>
                         var nothing_to_do = 1;
                         //
-                        var attr_type = disp.attr("type");
-                        if( typeof $(this).attr("type") !== "undefined" ){ attr_type = $(this).attr("type"); }
+                        var attr_type = disp.attr( 'type' );
+                        if( typeof $(this).attr( 'type' ) !== 'undefined' ){ attr_type = $(this).attr( 'type' ); }
                         //
-                        if( $(this)[0].tagName === "button" ) // <button>
+                        if( $(this)[0].tagName === 'button' ) // <button>
                         {
-                            type_button( attr_type, $(this).text(), $(this).attr("inc"), disp.attr("type"), disp.attr("loop") );
+                            type_button( attr_type, $(this).text(), $(this).attr('inc'), disp.attr('type'), disp.attr('loop') );
                             nothing_to_do = 0;
                         }
                         //
-                        else if( $(this)[0].tagName === "menu" ) // <menu>
+                        else if( $(this)[0].tagName === 'menu' ) // <menu>
                         {
                             type_menu( i_type[attr_type] );
                             nothing_to_do = 0;
@@ -751,36 +698,33 @@ function init()
                         //
                         if( nothing_to_do == 1 )
                         {
-                            console.log( "warning: below is ignored" );
-                            console.log( "  -> " + $(this)[0].tagName + " : " + $(this).attr("func") + " : " + $(this).text() );
+                            console.log( 'warning: below is ignored' );
+                            console.log( '  -> ' + $(this)[0].tagName + ' : ' + $(this).attr('func') + ' : ' + $(this).text() );
                         }
                     });
-//                    $("#form_controller-" + c).append( 'F' );
-//                    $("#form_controller-" + c).append( '</span>F' );
                     i = k;
-                    if( type_default == 1 ){ disp.attr( "type", "default" ); type_default = 0; }
+                    if( type_default == 1 ){ disp.attr( 'type', 'default' ); type_default = 0; }
                     break;
                 }
                 else{ /*console.log("skip");*/ }
             }
             i = i + 1;
         }
-/*
-        $(function() // make controller draggable and resizable
-        {
-            $( "#div_panel-" + c ).draggable();
-            $( "#div_panel-" + c ).resizable();
-        });
-*/
     }
 
     function createSharedPanel( path2menuObj )
     {
-        if( debug > 0 ){ console.log( "Start createSharedPanel()" ); }
+//        if( debug > 0 ){ console.log( 'Start createSharedPanel()' ); }
+        console.log( 'Start createSharedPanel()' );
+        //
+//        var height_shared_selects = Number( document.getElementById( 'div_shared_selects' ).clientHeight );
+        $( '#shared_selects' ).html( '' );
+//        if( height_shared_selects < 10 ){ return; }  // too small -> not shown
+        if( sync_panel == 0 ){ return; }  // not shown
+        //
         var menu_name    = path2menuObj.menu_name;
 //        var menu_running = path2menuObj.menu_running;
 //        var menu_desc    = path2menuObj.menu_desc;
-
         var shared_type = []; // common types among controllers
         var shared_name = []; // common selected names among controllers for each type
         var idx = []; idx[0] = []; // [c][i] index for name
@@ -810,7 +754,7 @@ function init()
             }
         }
         if( debug > 1 ){ console.log( shared_type ); }
-
+        //
         var shared_name_list = []; // [i][j]: selectable name list for shared_type[i]
         for( var i=0; i<=shared_type.length-1; i++ )
         {
@@ -819,28 +763,25 @@ function init()
             if( debug > 1 ){ console.log( menu_name[0][idx[0][i]] ); }
             for( var j=0; j<=menu_name[0][idx[0][i]].length-1; j++ )
             {
-                if( debug > 1 ){ console.log( ">>" + menu_name[0][idx[0][i]][j] ); }
+                if( debug > 1 ){ console.log( '>>' + menu_name[0][idx[0][i]][j] ); }
                 var flag = 1;
-
                 for( var c=1; c<=menu_name.length-1; c++ )
                 {
                     for( var j2=0; j2<=menu_name[c][idx[c][i]].length-1; j2++ )
                     {
-                        if( debug > 1 ){ console.log( "    <-> " + menu_name[c][idx[c][i]][j2] ); }
+                        if( debug > 1 ){ console.log( '    <-> ' + menu_name[c][idx[c][i]][j2] ); }
                         if( menu_name[0][idx[0][i]][j] == menu_name[c][idx[c][i]][j2] ){ break; }
                         if( j2 == menu_name[c][idx[c][i]].length-1 ){ flag = 0; }
                     }
                     if( flag == 0 ){ break; }
                 }
-
-                if( debug > 1 ){ console.log( "      --> flag = " + flag ); }
+                if( debug > 1 ){ console.log( '      --> flag = ' + flag ); }
                 if( flag == 1 ){ shared_name_list[i][shared_name_list[i].length] = menu_name[0][idx[0][i]][j]; }
             }
             if( debug > 1 ){ console.log( shared_name_list[i] ); }
         }
-
-        // create shared panel
-        $( '#shared_selects' ).html( '' );
+        //
+        // create html of shared panel
         for( var i=0; i<=shared_name_list.length-1; i++ )
         {
             if( shared_name_list[i].length == 1 ){ continue; }
@@ -854,7 +795,7 @@ function init()
             }
             $( '#shared_selects' ).append( '<input id="shared_shift_pp_' + shared_type[i] + '" class="shared_shift" type="button" value=">">' );
         }
-        $( 'input.shared_shift' ).bind( "click", {}, onShiftSharedMenu );
+        $( 'input.shared_shift' ).bind( 'click', {}, onShiftSharedMenu );
 
         // TODO: create event (see opt.gs for reference)
 
@@ -924,14 +865,14 @@ function init()
     // targets are dynamically generated.
     function registerDynamicEvents()
     {
-        $( "select.xmlTree" ).off( "change" );
-        $( "select.xmlTree" ).on( "change", onChangeXmlTree );
+        $( 'select.xmlTree' ).off( 'change' );
+        $( 'select.xmlTree' ).on(  'change', onChangeXmlTree );
 
-        $( "input.conpp" ).off( "click" );
-        $( "input.conpp" ).on( "click", onAddCon );
+        $( 'input.conpp' ).off( 'click' );
+        $( 'input.conpp' ).on(  'click', onAddCon );
 
-        $( "input.conmm" ).off( "click" );
-        $( "input.conmm" ).on( "click", onDelCon );
+        $( 'input.conmm' ).off( 'click' );
+        $( 'input.conmm' ).on(  'click', onDelCon );
 
 //        $( "input.sizepp" ).off( "click" );
 //        $( "input.sizepp" ).on( "click", onMagnifySize );
@@ -939,25 +880,26 @@ function init()
 //        $( "input.sizemm" ).off( "click" );
 //        $( "input.sizemm" ).on( "click", onReduceSize );
 
-        $( "select.shared_selects" ).off( "change" );
-        $( "select.shared_selects" ).on( "change", onChangeSharedSelects );
+        $( 'select.shared_selects' ).off( 'change' );
+        $( 'select.shared_selects' ).on(  'change', onChangeSharedSelects );
     }
     // just for one time
     function registerStaticEvents()
     {
-//        $( "flexible" ).prop( 'checked', true ).trigger( 'change' );
-        $( "#flexible" ).off( "change" );
-        $( "#flexible" ).on(  "change", onChangeFlexiblePanel );
+        $( '#chk_flexible' ).off( 'change' );
+        $( '#chk_flexible' ).on(  'change', onChangeFlexiblePanel );
+
+        $( '#chk_panel_sync' ).off( 'change' );
+        $( '#chk_panel_sync' ).on(  'change', onChangeSyncPanel );
     }
 
     function onChangeSharedSelects()
     {
-        if( debug > 0 ){ console.log( "onChangeSharedSelects() starts" ); }
-        var mySelect = $(this).children("option:selected").attr("value");
-        var changeId = $(this).attr("id").split("_");
+        if( debug > 0 ){ console.log( 'onChangeSharedSelects() starts' ); }
+        var mySelect = $(this).children( 'option:selected' ).attr( 'value' );
+        var changeId = $(this).attr( 'id' ).split( '_' );
         changeSharedSelects( changeId[2], mySelect );
     }
-
     function changeSharedSelects( type, mySelect )
     {
         for( var c=0; c<=path.length-1; c++ )
@@ -976,29 +918,43 @@ function init()
 
     function onChangeXmlTree()
     {
-//        var mySelect = $(this).children("option:selected").text();
-        var mySelect = $(this).children("option:selected").attr("value");
-        var changeId = $(this).attr("id").split("-");  // select-c-i
-//        xml2path( changeId[1], changeId[2], mySelect );
+        var mySelect = $(this).children( 'option:selected' ).attr( 'value' );
+        var changeId = $(this).attr( 'id' ).split('-');  // select-c-i
         xml2path( { c: changeId[1], depth: changeId[2], name: mySelect } );
-//        path2panels();
         path2panels( 0, changeId[1] );
     }
 
     function onChangeFlexiblePanel()
     {
-        if( $("#flexible").prop("checked") == true )
+        if( $( '#chk_flexible' ).prop( 'checked' ) == true )
         {
-            $( ".panel" ).draggable( 'enable' );
-            $( ".panel" ).resizable( 'enable' );
+            $( '.panel' ).draggable( 'enable' );
+            $( '.panel' ).resizable( 'enable' );
         }
         else
         {
-            $( ".panel" ).draggable( 'disable' );
-            $( ".panel" ).resizable( 'disable' );
+            $( '.panel' ).draggable( 'disable' );
+            $( '.panel' ).resizable( 'disable' );
         }
     }
-
+    
+    function onChangeSyncPanel()
+    {
+        if( $( '#chk_panel_sync' ).prop( 'checked' ) == true )
+        {
+            console.log( 'panel sync on' );
+            $( '#div_shared_selects' ).height( 55 );
+            sync_panel = 1;
+        }
+        else
+        {
+            console.log( 'panel sync off' );
+            $( '#div_shared_selects' ).height( 0 );
+            console.log( $( '#div_shared_selects' ).height() );
+            sync_panel = 0;
+        }
+        path2panels( 0 );
+    }
     
     function addCon()
     {
@@ -1007,7 +963,6 @@ function init()
         fnames[c]      = [];
         child_type[c]  = [];
         zoom_fnames[c] = 1;
-//        $("#div_panel").append( '<div id="div_panel-' + c + '"></div>' );
         initPanel( c );
     }
 
@@ -1055,8 +1010,6 @@ function init()
             child_type[c_add][i] = child_type[c_add-1][i];
         }
         path2panels( 0, c_add );
-//        path2panels();
-//        path2panels( 0 );
     }
 
     function onDelCon()
@@ -1080,20 +1033,14 @@ function init()
             {
                 child_type[c-1][i] = child_type[c][i];
             }
-//            for( i=0; i<path_running[c].length; i++ )
-//            {
-//                path_running[c-1][i] = path_running[c][i];
-//            }
         }
         path.length         = path.length - 1;
         fnames.length       = fnames.length - 1;
         child_type.length   = child_type.length - 1
-//        path_running.length = path_running.length - 1;
 
         var parent = document.getElementById('div_panel');
         parent.removeChild( document.getElementById('div_panel-' + (path.length)) );
         path2panels( 0 );
-//        path2panels();
     }
 
 /*
@@ -1251,8 +1198,6 @@ function init()
             if( inc != 0 ){ shiftMenu( d, inc ); }
         }
         shiftMenu( 0, inc );
-//        path2panels();
         path2panels( 0, c );
-
     }
 }
