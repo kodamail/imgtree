@@ -918,7 +918,7 @@ function init()
     function onChangeXmlTree()
     {
         var mySelect = $(this).children( 'option:selected' ).attr( 'value' );
-        var changeId = $(this).attr( 'id' ).split('-');  // select-c-i
+        var changeId = $(this).attr( 'id' ).split( '-' );  // select-c-i
         xml2path( { c: changeId[1], depth: changeId[2], name: mySelect } );
         path2panels( 0, changeId[1] );
     }
@@ -953,8 +953,18 @@ function init()
 //            $( '#div_shared_selects' ).height( 0 );
             $( '#div_shared_selects' ).css( "height", "0px" );
             $( '#div_panel' ).css( "top", "0px" );
+//            $( '#div_panel' ).css( "bottom", "0px" );
             console.log( $( '#div_shared_selects' ).height() );
             sync_panel = 0;
+        }
+        panel_height = Number( document.getElementById( 'div_panel' ).clientHeight ) - 10;
+        var pheight= panel_height / disp_ny - 2 * cpanel_padding - cpanel_margin_for_border;
+        for( var c=0; c<=path.length-1; c++ ) // for all the controllers
+        {
+            var cy = Math.floor( c / disp_nx );
+            var top  = cy * panel_height / disp_ny;
+            $( '#div_panel-' + c ).css( "height", pheight + "px" );
+            $( '#div_panel-' + c ).css( "top", top + "px" );
         }
     }
     function onChangeSyncPanel()
