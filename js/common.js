@@ -112,8 +112,18 @@ function init()
             else if( key == 'sync_panel' ) // 0 or 1
             {
                 sync_panel = value;
-                if( sync_panel == 0 ){ $( '#chk_panel_sync' ).prop( 'checked', false );}
-                else                 { $( '#chk_panel_sync' ).prop( 'checked', true );}
+                if( sync_panel == 0 )
+                {
+                    $( '#chk_panel_sync' ).prop( 'checked', false );
+                    $( '#div_panel' ).css( "top", "0px" );
+                }
+                else
+                {
+                    $( '#chk_panel_sync' ).prop( 'checked', true );
+                    $( '#div_panel' ).css( "top", "55px" );
+                }
+                panel_height = Number( document.getElementById( 'div_panel' ).clientHeight ) - 10;
+                changeSyncPanel();
             }
         }
         //
@@ -347,16 +357,16 @@ function init()
         path[c].length         = depth;
         child_type[c].length   = depth;
         //
-        var tmp = $(xmlTree).children('tree');
+        var tmp = $(xmlTree).children( 'tree' );
         if( depth > 0 )
         {
-            tmp = tmp.children('dir');
-            path[c][depth]         = name;
+            tmp = tmp.children( 'dir' );
+            path[c][depth] = name;
             for( var i=1; i<=depth; i++ ) // seek to the specified depth
             {
                 tmp = tmp.children( "[ name = '" + path[c][i] + "' ]" );
             }
-            child_type[c][depth] = tmp.attr('child_type');
+            child_type[c][depth] = tmp.attr( 'child_type' );
         }
         init_path( tmp );
     }
@@ -420,11 +430,11 @@ function init()
                 //
                 // re-arrange menu_name[c][i] following xmlTypeList
                 attr_head = child_type[c][i-1].split('-')[0]; // e.g. run-1 -> run
-                tmp = $(xmlTypeList).children('type_list').children('type').filter("[ name |= '" + attr_head + "' ]");
+                tmp = $(xmlTypeList).children( 'type_list' ).children( 'type' ).filter( "[ name |= '" + attr_head + "' ]" );
                 pos = 0; // position to insert
-                tmp.children('value').each(function()
+                tmp.children( 'value' ).each(function()
                 {
-                    pos_old = menu_name[c][i].indexOf( $(this).attr('name') );
+                    pos_old = menu_name[c][i].indexOf( $(this).attr( 'name' ) );
                     if( pos_old > pos )
                     {
                         menu_name[c][i].splice( pos, 0, menu_name[c][i][pos_old] );
@@ -450,7 +460,7 @@ function init()
     function path2panels( initFlag, c )
     {
         var obj_tmp = path2menu();
-        var menu_name    = obj_tmp.menu_name;
+        var menu_name = obj_tmp.menu_name;
         if( initFlag == undefined ){ initFlag = 1; }
 
         var cmin = 0;
@@ -459,7 +469,7 @@ function init()
 
         // put menu to html
         //
-        if( initFlag == 1 ){ $('#div_panel').html( '' ); } // clear main panel
+        if( initFlag == 1 ){ $( '#div_panel' ).html( '' ); } // clear main panel
         //
         // for each controller
         for( c=cmin; c<=cmax; c++ )
@@ -474,18 +484,18 @@ function init()
         var href = '?path=';
         for( var c=0; c<path.length; c++ )
         {
-            if( c > 0 ){ href += ","; }
+            if( c > 0 ){ href += ','; }
             href += path[c][0]
             for( var i=1; i<path[c].length; i++ ){ href += '/' + path[c][i]; }
         }
+        href += '&sync_panel=' + sync_panel;
         document.getElementById( 'a_reload' ).href = href;
-//        console.log( $( "a_reload" ) );
-
+        //
         // create link for particular figure scene
         for ( var key in ln_link )
         {
             if( debug > 0 ){ console.log( key + ' : ' + ln_link[key] + ' : ' + ln_name[key] ); }
-            if( $('#' + key).length == 0 ){ continue; }
+            if( $( '#' + key ).length == 0 ){ continue; }
             var link = ln_link[key];
             for( var i=1; i<=path[cmin].length-1; i++ ) // i=0: root
             {
@@ -494,7 +504,6 @@ function init()
                 var re = new RegExp( '\\${' + tmp_type + '}', 'g' );
                 link = link.replace( re, tmp_value )
             }
-//            console.log( link );
             $( '#' + key ).html( '<a href="index.html?path=' + link + '">' + ln_name[key] + '</a>' );
         }
         //
@@ -527,7 +536,7 @@ function init()
     //---------------------------------------------------//
     function initPanel( c )
     {
-        if( debug > 0 ){ console.log( "Start initPanel(" + c + ")" ); }
+        if( debug > 0 ){ console.log( 'Start initPanel(' + c + ')' ); }
         var cx = c % disp_nx;
         var cy = Math.floor( c / disp_nx );
         if( debug > 0 )
@@ -600,8 +609,8 @@ function init()
         {
             for( k=len-1; k>=i; k-- ) // 2nd for each menu: if k=i, group has only one type.
             {
-                var types_target = child_type[c].slice(i-1,k).join("/"); // slice [i-1:k) such as "year" "year/month" etc.
-                disp = $(xmlDispList).children("disp_list").first().children("disp").filter("[ type = '" + types_target + "' ]");
+                var types_target = child_type[c].slice(i-1,k).join( '/' ); // slice [i-1:k) such as "year" "year/month" etc.
+                disp = $(xmlDispList).children( 'disp_list' ).first().children( 'disp' ).filter( "[ type = '" + types_target + "' ]" );
 //                disp = $(xmlDispList).children("disp_list").first().children("disp").filter("[ type = '" + types_target + "' ]" || "[ type = 'default' ]");
                 type_default = 0;
                 //
@@ -611,10 +620,10 @@ function init()
                 {
                     // get title from xml
                     var attr_head = child_type[c][i-1].split('-')[0]; // e.g. run-1 -> run
-                    var tmp = $(xmlTypeList).children('type_list').children('type').filter("[ name |= '" + attr_head + "' ]");
+                    var tmp = $(xmlTypeList).children( 'type_list' ).children( 'type' ).filter( "[ name |= '" + attr_head + "' ]" );
                     var title = '';
 //                    tmp.children("description").each(function()
-                    tmp.children('description,desc').each(function()
+                    tmp.children( 'description,desc' ).each(function()
                     {
                         title = $(this).text();
                         return false; // just one time
@@ -653,17 +662,17 @@ function init()
                 //
                 // insert/don't insert "<br>" by checking size
                 //   if <disp type="default"> exists
-                if( typeof disp.attr('type') === 'undefined' && k == i )
+                if( typeof disp.attr( 'type' ) === 'undefined' && k == i )
                 {
-                    disp = $(xmlDispList).children('disp_list').first().children('disp').filter("[ type = 'default' ]");
-                    if( typeof disp.attr('type') !== 'undefined' )
+                    disp = $(xmlDispList).children( 'disp_list' ).first().children( 'disp' ).filter( "[ type = 'default' ]" );
+                    if( typeof disp.attr( 'type' ) !== 'undefined' )
                     {
                         disp.attr( 'type', child_type[c][i-1] );
                         type_default = 1;
                     }
                 }
                 // default appearance for single type (not specified in disp_list.xml)
-                if( typeof disp.attr('type') === 'undefined' && k == i )
+                if( typeof disp.attr( 'type' ) === 'undefined' && k == i )
                 {
 //                    insertEnterBySize();
                     type_button( child_type[c][i-1], '&lt;', -1, child_type[c][i-1], 'no' );
@@ -672,7 +681,7 @@ function init()
                 }
                 //
                 // specified in disp_list.xml
-                else if( typeof disp.attr('type') !== 'undefined' )
+                else if( typeof disp.attr( 'type' ) !== 'undefined' )
                 {
 //                    insertEnterBySize();
                     disp.children("*").each(function() // for all <button>, <menu>
@@ -686,7 +695,7 @@ function init()
                         //
                         if( $(this)[0].tagName === 'button' ) // <button>
                         {
-                            type_button( attr_type, $(this).text(), $(this).attr('inc'), disp.attr('type'), disp.attr('loop') );
+                            type_button( attr_type, $(this).text(), $(this).attr( 'inc' ), disp.attr( 'type' ), disp.attr( 'loop' ) );
                             nothing_to_do = 0;
                         }
                         //
@@ -714,12 +723,9 @@ function init()
 
     function createSharedPanel( path2menuObj )
     {
-//        if( debug > 0 ){ console.log( 'Start createSharedPanel()' ); }
-        console.log( 'Start createSharedPanel()' );
+        if( debug > 0 ){ console.log( 'Start createSharedPanel()' ); }
         //
-//        var height_shared_selects = Number( document.getElementById( 'div_shared_selects' ).clientHeight );
         $( '#shared_selects' ).html( '' );
-//        if( height_shared_selects < 10 ){ return; }  // too small -> not shown
         if( sync_panel == 0 ){ return; }  // not shown
         //
         var menu_name    = path2menuObj.menu_name;
@@ -818,43 +824,36 @@ function init()
         for( c=cmin; c<=cmax; c++ )
         {
             var path_str = img_dir;
-            if( path_str !== "" ){ path_str = path_str + "/"; }
+            if( path_str !== '' ){ path_str = path_str + '/'; }
 
             for( i=1; i<path[c].length; i++ )
             {
-                path_str += path[c][i] + "/";
+                path_str += path[c][i] + '/';
             }
 
-            $("#div_imgs-" + c).html( "" );
+            $( '#div_imgs-' + c).html( '' );
             for( i=0; i<fnames[c].length; i++ )
             {
                 file = path_str + fnames[c][i];
 
                 if( debug > 1 )
                 {
-                    $("#div_imgs-" + c).append( i + ": " + file + ", <br>" );
+                    $( '#div_imgs-' + c).append( i + ': ' + file + ', <br>' );
                 }
-                var id = "img-" + c + "-" + i;
-                $("#div_imgs-" + c).append( '<img id="' + id + '" src="./' + file + '" style="visibility: hidden;">' );
-//                var panel_width = panel_width_default * zoom_fnames[c];
-                $("#"+id).one( "load", function () // width can be obtained after loading
+                var id = 'img-' + c + '-' + i;
+                $( '#div_imgs-' + c ).append( '<img id="' + id + '" src="./' + file + '" style="visibility: hidden;">' );
+                $( '#' + id ).one( 'load', function () // width can be obtained after loading
                 {
-                    var changeId = $(this).attr("id").split("-");  // select-c-i
+                    var changeId = $(this).attr( 'id' ).split( '-' );  // select-c-i
                     var c = changeId[1];
                     var i = changeId[2];
-                    var id = "img-" + c + "-" + i;
+                    var id = 'img-' + c + '-' + i;
                     changeSize(c);
-
-//                    document[id].width = document.getElementById( 'div_panel-' + c ).clientWidth;
-//                    document[id].style.setProperty( "visibility", "visible" );
-                    document.getElementById(id).style.setProperty( "visibility", "visible" );
+                    document.getElementById(id).style.setProperty( 'visibility', 'visible' );
                 });
-               
             }
         }
-
     }
-
 
     //---------------------------------------------------//
     //
@@ -938,21 +937,29 @@ function init()
         }
     }
     
-    function onChangeSyncPanel()
+    function changeSyncPanel()
     {
         if( $( '#chk_panel_sync' ).prop( 'checked' ) == true )
         {
             console.log( 'panel sync on' );
-            $( '#div_shared_selects' ).height( 55 );
+//            $( '#div_shared_selects' ).height( 55 );
+            $( '#div_shared_selects' ).css( "height", "55px" );
+            $( '#div_panel' ).css( "top", "55px" );
             sync_panel = 1;
         }
         else
         {
             console.log( 'panel sync off' );
-            $( '#div_shared_selects' ).height( 0 );
+//            $( '#div_shared_selects' ).height( 0 );
+            $( '#div_shared_selects' ).css( "height", "0px" );
+            $( '#div_panel' ).css( "top", "0px" );
             console.log( $( '#div_shared_selects' ).height() );
             sync_panel = 0;
         }
+    }
+    function onChangeSyncPanel()
+    {
+        changeSyncPanel();
         path2panels( 0 );
     }
     
