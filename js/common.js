@@ -29,7 +29,10 @@ if( typeof(xml_disp_list_filename) == 'undefined' )
 var disp_nx = -1, disp_ny = -1;
 //var disp_ny = 2;
 
+// whether or not to show sync panel
 var sync_panel = 1;
+
+var controller = 1;
 
 //---------------------------------------------------------------------------//
 //
@@ -93,12 +96,12 @@ function init()
             var temp = arg[depth].split( '=' );
             var key = temp[0];
             if( 1 in temp ){ value = temp[1]; }
-            else{ value = ""; }
+            else{ value = ''; }
             if( debug > 0 ){ console.log( '  ' + key + ' : ' + value ); }
             if( key == 'path' )
             {
                 path_init = [];
-                path_list = value.split( "," );
+                path_list = value.split( ',' );
                 for( var c=0; c<path_list.length; c++ )
                 {
                     path_init[c] = path_list[c].split( '/' );
@@ -124,6 +127,18 @@ function init()
                 }
                 panel_height = Number( document.getElementById( 'div_panel' ).clientHeight ) - 10;
                 changeSyncPanel();
+            }
+            else if( key == 'controller' ) // 0 or 1
+            {
+                controller = value;
+                if( controller == 0 )
+                {
+                    $( '#chk_controller' ).prop( 'checked', false );
+                }
+                else
+                {
+                    $( '#chk_controller' ).prop( 'checked', true );
+                }
             }
         }
         //
@@ -489,6 +504,7 @@ function init()
             for( var i=1; i<path[c].length; i++ ){ href += '/' + path[c][i]; }
         }
         href += '&sync_panel=' + sync_panel;
+        href += '&controller=' + controller;
         document.getElementById( 'a_reload' ).href = href;
         //
         // create link for particular figure scene
@@ -531,7 +547,7 @@ function init()
     //
     //---------------------------------------------------//
     //
-    // ...
+    // initialize overall panel
     //
     //---------------------------------------------------//
     function initPanel( c )
@@ -558,8 +574,8 @@ function init()
     //
     //---------------------------------------------------//
     //
-    // create one panel
-    // assume panel itself already exists (i.e., initPanel is already performed).
+    // create a panel
+    // assume initPanel() is already performed (i.e., panel itself already exists).
     //
     //---------------------------------------------------//
     function createPanel( path2menuObj, c )
@@ -579,7 +595,9 @@ function init()
         //
         // clear form in a controller c (refresh cache)
         $( '#div_controller-' + c ).html( '<form class="controller" id="form_controller-' + c + '" action="#"></form>' );
-        $( '#form_controller-' + c).html( '' );
+        $( '#form_controller-' + c ).html( '' );
+        if( controller == 0 ){ return; }
+//return;
         //
         // add "+" and "-" buttons for a form
         if( path.length > 1 )
@@ -808,7 +826,6 @@ function init()
 
     }
 
-
     //---------------------------------------------------//
     //
     // update images following current path and fnames.
@@ -831,7 +848,7 @@ function init()
                 path_str += path[c][i] + '/';
             }
 
-            $( '#div_imgs-' + c).html( '' );
+            $( '#div_imgs-' + c ).html( '' );
             for( i=0; i<fnames[c].length; i++ )
             {
                 file = path_str + fnames[c][i];
@@ -890,6 +907,9 @@ function init()
 
         $( '#chk_panel_sync' ).off( 'change' );
         $( '#chk_panel_sync' ).on(  'change', onChangeSyncPanel );
+
+        $( '#chk_controller' ).off( 'change' );
+        $( '#chk_controller' ).on(  'change', onChangeController );
     }
 
     function onChangeSharedSelects()
@@ -972,6 +992,13 @@ function init()
         changeSyncPanel();
         path2panels( 0 );
     }
+
+    function onChangeController()
+    {
+        if( $( '#chk_controller' ).prop( 'checked' ) == true ){ controller = 1; }
+        else{ controller = 0; }
+        path2panels( 0 );
+    }
     
     function addCon()
     {
@@ -1031,7 +1058,7 @@ function init()
 
     function onDelCon()
     {
-        var c_del = parseInt( $(this).attr("id").split("-")[1] );  // conmm-c
+        var c_del = parseInt( $(this).attr( 'id' ).split( '-' )[1] );  // conmm-c
         var c, i;
 
         // move
@@ -1055,8 +1082,8 @@ function init()
         fnames.length       = fnames.length - 1;
         child_type.length   = child_type.length - 1
 
-        var parent = document.getElementById('div_panel');
-        parent.removeChild( document.getElementById('div_panel-' + (path.length)) );
+        var parent = document.getElementById( 'div_panel' );
+        parent.removeChild( document.getElementById( 'div_panel-' + (path.length)) );
         path2panels( 0 );
     }
 
@@ -1095,7 +1122,7 @@ function init()
     }
     function changeSize(c)
     {
-        var id_parent = "img-" + c;
+        var id_parent = 'img-' + c;
         for( var i=0; i<fnames[c].length; i++ )
         {
             var id = id_parent + "-" + i
@@ -1104,7 +1131,7 @@ function init()
 //            var maxHeight = document.getElementById( 'div_panel-' + c ).clientHeight - document.getElementById( 'form_controller-' + c ).clientHeight;
             var maxWidth  = document.getElementById( 'div_panel-' + c ).clientWidth - cpanel_padding * 2;
             var maxHeight = document.getElementById( 'div_panel-' + c ).clientHeight - document.getElementById( 'form_controller-' + c ).clientHeight - cpanel_padding * 3;
-            if( debug > 0 ){ console.log( "maxWidth:" + maxWidth + " maxHeight: " + maxHeight + " ar=" + maxHeight / maxWidth ); }
+            if( debug > 0 ){ console.log( 'maxWidth:' + maxWidth + ' maxHeight: ' + maxHeight + ' ar=' + maxHeight / maxWidth ); }
             if( ar > maxHeight / maxWidth )
             {
                 document.getElementById(id).height = maxHeight;
