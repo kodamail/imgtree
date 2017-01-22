@@ -32,7 +32,11 @@ var disp_nx = -1, disp_ny = -1;
 // whether or not to show sync panel
 var sync_panel = 1;
 
+// whether or not to show controller
 var controller = 1;
+
+// whether or not to show controller
+var panel_flex = 0;
 
 //---------------------------------------------------------------------------//
 //
@@ -115,30 +119,22 @@ function init()
             else if( key == 'sync_panel' ) // 0 or 1
             {
                 sync_panel = value;
-                if( sync_panel == 0 )
-                {
-                    $( '#chk_panel_sync' ).prop( 'checked', false );
-                    $( '#div_panel' ).css( "top", "0px" );
-                }
-                else
-                {
-                    $( '#chk_panel_sync' ).prop( 'checked', true );
-                    $( '#div_panel' ).css( "top", "55px" );
-                }
-                panel_height = Number( document.getElementById( 'div_panel' ).clientHeight ) - 10;
+                if( sync_panel == 0 ){ $( '#chk_panel_sync' ).prop( 'checked', false ); }
+                else                 { $( '#chk_panel_sync' ).prop( 'checked', true );  }
                 changeSyncPanel();
             }
             else if( key == 'controller' ) // 0 or 1
             {
                 controller = value;
-                if( controller == 0 )
-                {
-                    $( '#chk_controller' ).prop( 'checked', false );
-                }
-                else
-                {
-                    $( '#chk_controller' ).prop( 'checked', true );
-                }
+                if( controller == 0 ){ $( '#chk_controller' ).prop( 'checked', false ); }
+                else                 { $( '#chk_controller' ).prop( 'checked', true );  }
+            }
+            else if( key == 'panel_flex' ) // 0 or 1
+            {
+console.log( value );
+                panel_flex = value;
+                if( panel_flex == 0 ){ $( '#chk_flex' ).prop( 'checked', false ); }
+                else                 { $( '#chk_flex' ).prop( 'checked', true ); }
             }
         }
         //
@@ -404,7 +400,7 @@ function init()
             menu_name[c]    = [];
             menu_running[c] = [];
             menu_desc[c]    = [];
-            target = $(xmlTree).children('tree').children('dir');
+            target = $(xmlTree).children( 'tree' ).children( 'dir' );
 
             for( i=1; i<=path[c].length-1; i++ ) // i=0: root
             {
@@ -412,10 +408,10 @@ function init()
                 menu_running[c][i] = [];
                 menu_desc[c][i]    = [];
                 //
-                target.children('dir').each(function()
+                target.children( 'dir' ).each(function()
                 {
-                    menu_name[c][i][menu_name[c][i].length]       = $(this).attr('name');
-                    menu_running[c][i][menu_running[c][i].length] = $(this).attr('name');
+                    menu_name[c][i][menu_name[c][i].length]       = $(this).attr( 'name' );
+                    menu_running[c][i][menu_running[c][i].length] = $(this).attr( 'name' );
                     menu_desc[c][i][menu_desc[c][i].length]       = '';
                 });
                 //
@@ -423,12 +419,12 @@ function init()
                 for( j=0; j<=menu_name[c][i].length-1; j++ )
                 {
                     attr_head = '';
-                    if( target.attr('child_type') != undefined )
+                    if( target.attr( 'child_type' ) != undefined )
                     {
-                        attr_head = target.attr('child_type').split('-')[0]; // e.g. run-1 -> run
+                        attr_head = target.attr( 'child_type' ).split( '-' )[0]; // e.g. run-1 -> run
                     }
-                    tmp = $(xmlTypeList).children('type_list').children('type').filter("[ name |= '" + attr_head + "' ]");
-                    tmp = tmp.children('value').filter("[ name = '" + menu_name[c][i][j] + "' ]");
+                    tmp = $(xmlTypeList).children( 'type_list' ).children( 'type' ).filter( "[ name |= '" + attr_head + "' ]" );
+                    tmp = tmp.children( 'value' ).filter( "[ name = '" + menu_name[c][i][j] + "' ]" );
 
                     tmp.children("*").each(function()
                     {
@@ -493,9 +489,28 @@ function init()
             createPanel( obj_tmp, c );
         }
         createSharedPanel( obj_tmp );
-        
-        // set link for re-load
-//        var href = "index.html?path=";
+        updateLink();
+        //
+        if( cmin == cmax ){ draw( cmin ); }
+        else{ draw(); }
+        //
+        changeFlexiblePanel()
+        registerDynamicEvents();  // re-register events
+    }
+    //
+    //---------------------------------------------------//
+    //
+    // create/update hyper link
+    //
+    //---------------------------------------------------//
+    function updateLink()
+    {
+        var opt = "";
+        opt += '&sync_panel=' + sync_panel;
+        opt += '&controller=' + controller;
+        opt += '&panel_flex=' + panel_flex;
+
+        // re-load
         var href = '?path=';
         for( var c=0; c<path.length; c++ )
         {
@@ -503,46 +518,28 @@ function init()
             href += path[c][0]
             for( var i=1; i<path[c].length; i++ ){ href += '/' + path[c][i]; }
         }
-        href += '&sync_panel=' + sync_panel;
-        href += '&controller=' + controller;
+        href += opt;
         document.getElementById( 'a_reload' ).href = href;
         //
-        // create link for particular figure scene
+        // particular figure scene
         for ( var key in ln_link )
         {
             if( debug > 0 ){ console.log( key + ' : ' + ln_link[key] + ' : ' + ln_name[key] ); }
             if( $( '#' + key ).length == 0 ){ continue; }
             var link = ln_link[key];
-            for( var i=1; i<=path[cmin].length-1; i++ ) // i=0: root
+//            for( var i=1; i<=path[cmin].length-1; i++ ) // i=0: root
+            for( var i=1; i<=path[0].length-1; i++ ) // i=0: root
             {
-                var tmp_type = child_type[cmin][i-1];
-                var tmp_value = path[cmin][i];
+//                var tmp_type = child_type[cmin][i-1];
+                var tmp_type = child_type[0][i-1];
+//                var tmp_value = path[cmin][i];
+                var tmp_value = path[0][i];
                 var re = new RegExp( '\\${' + tmp_type + '}', 'g' );
                 link = link.replace( re, tmp_value )
             }
-            $( '#' + key ).html( '<a href="index.html?path=' + link + '">' + ln_name[key] + '</a>' );
+//            $( '#' + key ).html( '<a href="index.html?path=' + link + '">' + ln_name[key] + '</a>' );
+            $( '#' + key ).html( '<a href="?path=' + link + opt + '">' + ln_name[key] + '</a>' );
         }
-        //
-        if( cmin == cmax ){ draw(cmin); }
-        else{ draw(); }
-        //
-        registerDynamicEvents();  // re-register events
-        //
-        // make panel draggable and resizable
-        $( '.panel' ).draggable();
-        $( '.panel' ).resizable( { handles: 'all' } );
-        var timer_panel = false;
-        //
-        $( '.panel' ).off( 'resize' );
-        $( '.panel' ).on(  'resize', function( e, ui )
-        {
-            if( timer_panel !== false ){ clearTimeout( timer_panel ); }
-            timer_panel = setTimeout(function()
-            {
-                onResize(e);
-            }, 200 );
-        });
-        onChangeFlexiblePanel();
     }
     //
     //---------------------------------------------------//
@@ -819,7 +816,10 @@ function init()
             }
             $( '#shared_selects' ).append( '<input id="shared_shift_pp_' + shared_type[i] + '" class="shared_shift" type="button" value=">">' );
         }
+
         $( 'input.shared_shift' ).bind( 'click', {}, onShiftSharedMenu );
+        $( 'select.shared_selects' ).off( 'change' );
+        $( 'select.shared_selects' ).on(  'change', onChangeSharedSelects );
 
         // TODO: create event (see opt.gs for reference)
 
@@ -896,14 +896,22 @@ function init()
 //        $( "input.sizemm" ).off( "click" );
 //        $( "input.sizemm" ).on( "click", onReduceSize );
 
-        $( 'select.shared_selects' ).off( 'change' );
-        $( 'select.shared_selects' ).on(  'change', onChangeSharedSelects );
+        var timer_panel = false;
+        $( '.panel' ).off( 'resize' );
+        $( '.panel' ).on(  'resize', function( e, ui )
+        {
+            if( timer_panel !== false ){ clearTimeout( timer_panel ); }
+            timer_panel = setTimeout(function()
+            {
+                onResize(e);
+            }, 200 );
+        });
     }
     // just for one time
     function registerStaticEvents()
     {
-        $( '#chk_flexible' ).off( 'change' );
-        $( '#chk_flexible' ).on(  'change', onChangeFlexiblePanel );
+        $( '#chk_flex' ).off( 'change' );
+        $( '#chk_flex' ).on(  'change', onChangeFlexiblePanel );
 
         $( '#chk_panel_sync' ).off( 'change' );
         $( '#chk_panel_sync' ).on(  'change', onChangeSyncPanel );
@@ -943,9 +951,12 @@ function init()
         path2panels( 0, changeId[1] );
     }
 
-    function onChangeFlexiblePanel()
+    function changeFlexiblePanel()
     {
-        if( $( '#chk_flexible' ).prop( 'checked' ) == true )
+        $( '.panel' ).draggable();
+        $( '.panel' ).resizable( { handles: 'all' } );
+
+        if( panel_flex == 1 )
         {
             $( '.panel' ).draggable( 'enable' );
             $( '.panel' ).resizable( 'enable' );
@@ -955,27 +966,34 @@ function init()
             $( '.panel' ).draggable( 'disable' );
             $( '.panel' ).resizable( 'disable' );
         }
+        updateLink();
+    }
+    function onChangeFlexiblePanel()
+    {
+        if( $( '#chk_flex' ).prop( 'checked' ) == true )
+        {
+            panel_flex = 1;
+        }
+        else
+        {
+            panel_flex = 0;
+        }
+        changeFlexiblePanel();
     }
     
     function changeSyncPanel()
     {
-        if( $( '#chk_panel_sync' ).prop( 'checked' ) == true )
+        if( sync_panel == 1 )
         {
-            console.log( 'panel sync on' );
-//            $( '#div_shared_selects' ).height( 55 );
+            if( debug > 0 ){ console.log( 'panel sync on' ); }
             $( '#div_shared_selects' ).css( "height", "55px" );
             $( '#div_panel' ).css( "top", "55px" );
-            sync_panel = 1;
         }
         else
         {
-            console.log( 'panel sync off' );
-//            $( '#div_shared_selects' ).height( 0 );
+            if( debug > 0 ){ console.log( 'panel sync off' ); }
             $( '#div_shared_selects' ).css( "height", "0px" );
             $( '#div_panel' ).css( "top", "0px" );
-//            $( '#div_panel' ).css( "bottom", "0px" );
-            console.log( $( '#div_shared_selects' ).height() );
-            sync_panel = 0;
         }
         panel_height = Number( document.getElementById( 'div_panel' ).clientHeight ) - 10;
         var pheight= panel_height / disp_ny - 2 * cpanel_padding - cpanel_margin_for_border;
@@ -989,14 +1007,32 @@ function init()
     }
     function onChangeSyncPanel()
     {
+        if( $( '#chk_panel_sync' ).prop( 'checked' ) == true )
+        {
+            sync_panel = 1;
+        }
+        else
+        {
+            sync_panel = 0;
+        }
         changeSyncPanel();
+
+//        createSharedPanel( path2menu() );
+//        changeFlexiblePanel()
+
         path2panels( 0 );
     }
 
     function onChangeController()
     {
-        if( $( '#chk_controller' ).prop( 'checked' ) == true ){ controller = 1; }
-        else{ controller = 0; }
+        if( $( '#chk_controller' ).prop( 'checked' ) == true )
+        {
+            controller = 1;
+        }
+        else
+        {
+            controller = 0;
+        }
         path2panels( 0 );
     }
     
