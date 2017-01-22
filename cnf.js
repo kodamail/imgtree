@@ -9,8 +9,9 @@
 //
 //---------------------------------------------------------------------------//
 //
-// top directory of image files (please change appropriately)
+// top directory of image files (change appropriately)
 var img_dir = './img';
+var xml_tree_filename = 'list.xml';
 
 // comment out below if you prepare your own in img_dir
 var xml_type_list_filename = 'usr/default/type.xml';
