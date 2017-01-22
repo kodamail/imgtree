@@ -131,7 +131,6 @@ function init()
             }
             else if( key == 'panel_flex' ) // 0 or 1
             {
-console.log( value );
                 panel_flex = value;
                 if( panel_flex == 0 ){ $( '#chk_flex' ).prop( 'checked', false ); }
                 else                 { $( '#chk_flex' ).prop( 'checked', true ); }
@@ -298,12 +297,12 @@ console.log( value );
         {
             // check for the previous values
             var flag = 0;
-            target.children('dir').each( function()
+            target.children( 'dir' ).each( function()
             {
-                if( $(this).attr('name') == path_prev[path[c].length] )
+                if( $(this).attr( 'name' ) == path_prev[path[c].length] )
                 {
-                    path[c][path[c].length]             = $(this).attr('name');
-                    if( $(this).attr('child_type') != '' ){ child_type[c][child_type[c].length] = $(this).attr('child_type'); }
+                    path[c][path[c].length] = $(this).attr( 'name' );
+                    if( $(this).attr( 'child_type') != '' ){ child_type[c][child_type[c].length] = $(this).attr( 'child_type' ); }
                     else                                  { child_type[c][child_type[c].length] = 'none_' + child_type[c].length; }
                     flag = 1;
                     init_path( $(this) );
@@ -1159,25 +1158,51 @@ console.log( value );
     function changeSize(c)
     {
         var id_parent = 'img-' + c;
+        var panel_width  = document.getElementById( 'div_panel-' + c ).clientWidth - cpanel_padding * 2;
+        var panel_height = document.getElementById( 'div_panel-' + c ).clientHeight - document.getElementById( 'form_controller-' + c ).clientHeight - cpanel_padding * 3;
+
+        // assume panel is 3:2 (it is tuning parameter)
+        var ar1 = ( ( panel_width  / 3 ) / ( panel_height / 2 ) );
+        var ar2 = 0;
+        for( var nx=1; nx<=fnames[c].length; nx++ )
+        {
+            var ny = Math.ceil( fnames[c].length / nx );
+            if( Math.abs( ar1 / (nx / ny) - 1 ) < Math.abs( ar1 / ar2 - 1 ) )
+            { ar2 = nx / ny; disp_img_nx = nx; disp_img_ny = ny; }
+        }
+        var max_width  = -9999;
+        var max_height = -9999;
         for( var i=0; i<fnames[c].length; i++ )
         {
-            var id = id_parent + "-" + i
+            var id = id_parent + "-" + i;
+            var width  = document.getElementById(id).naturalWidth;
+            var height = document.getElementById(id).naturalHeight;
+            if( max_width  < width  ){ max_width  = width; }
+            if( max_height < height ){ max_height = height; }
+        }
+        var ar = ( max_height * disp_img_ny ) / ( max_width * disp_img_nx );
+        if( ar < panel_height / panel_width ){ scale = panel_width / max_width / disp_img_nx; }
+        else{ scale = panel_height / max_height / disp_img_ny; }
+//        var ar = max_height / max_width;
+//        if( ar < panel_height / panel_width ){ scale = panel_width / max_width; }
+//        else{ scale = panel_height / max_height; }
+        for( var i=0; i<fnames[c].length; i++ )
+        {
+            var id = id_parent + "-" + i;
+            var width  = document.getElementById(id).naturalWidth  * scale;
+            var height = document.getElementById(id).naturalHeight * scale;
+            document.getElementById(id).height = height;
+            document.getElementById(id).width  = width;
+/*
             var ar = document.getElementById(id).naturalHeight / document.getElementById(id).naturalWidth;
-//            var maxWidth  = document.getElementById( 'div_panel-' + c ).clientWidth;
-//            var maxHeight = document.getElementById( 'div_panel-' + c ).clientHeight - document.getElementById( 'form_controller-' + c ).clientHeight;
-            var maxWidth  = document.getElementById( 'div_panel-' + c ).clientWidth - cpanel_padding * 2;
-            var maxHeight = document.getElementById( 'div_panel-' + c ).clientHeight - document.getElementById( 'form_controller-' + c ).clientHeight - cpanel_padding * 3;
-            if( debug > 0 ){ console.log( 'maxWidth:' + maxWidth + ' maxHeight: ' + maxHeight + ' ar=' + maxHeight / maxWidth ); }
-            if( ar > maxHeight / maxWidth )
+            var height = panel_height
+            var width  = panel_height / ar;
+            if( ar < panel_height / panel_width )
             {
-                document.getElementById(id).height = maxHeight;
-                document.getElementById(id).width  = maxHeight / ar;
+                height = panel_width * ar
+                width  = panel_width;
             }
-            else
-            {
-                document.getElementById(id).width  = maxWidth;
-                document.getElementById(id).height = maxWidth * ar;
-            }
+*/
         }
     }
 
