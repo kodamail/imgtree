@@ -14,9 +14,9 @@ use strict;
 use Fcntl;
 
 my %opt = ( 
-    img_dir      => "",  # top directory of image files
-    nodesc       => 0,
-    xml_filename => ""
+    img_dir           => "",  # top directory of image files
+    nodesc            => 0,
+    xml_tree_filename => ""
     );
 
 # get img_dir from usr/cnf.js
@@ -27,18 +27,17 @@ close( FH );
 for my $line (@js)
 {
     $line =~ s/\/\/.*$//; # remove comment
-    if( $line =~ /img_dir *= *\'([^']+)\' *;/ )
-    {
-	$opt{img_dir} = $1;
-    }
+    if( $line =~ /img_dir *= *\'([^']+)\' *;/ ){ $opt{img_dir} = $1; }
+    if( $line =~ /xml_tree_filename *= *\'([^']+)\' *;/ ){ $opt{xml_tree_filename} = $1; }
 }
 #$opt{img_dir} = $ARGV[0];
 #$opt{img_dir} = './for_test/img_dev';
 
-$opt{xml_filename} = $opt{img_dir} . '/../list.xml';
-
-$opt{xml_filename} =~ s|[^/]+/\.\./||g;
-
+if( $opt{xml_tree_filename} == "" )
+{
+    $opt{xml_tree_filename} = $opt{img_dir} . '/../list.xml';
+    $opt{xml_tree_filename} =~ s|[^/]+/\.\./||g;
+}
 
 #$opt{nodesc} = 1;  # for debug
 
@@ -93,14 +92,14 @@ sub main
     $xml .= $h_ret . '</tree>' . $h_ret;
     
     $xml .= $h_ret;
-    if( $opt{xml_filename} eq "" )
+    if( $opt{xml_tree_filename} eq "" )
     {
-	print $xml;
+        print $xml;
     }
     else
     {
-	open( FH, "> $opt{xml_filename}" ) 
-	    or die "error in img2xml.pl: cannot open $opt{xml_filename}\n";
+	open( FH, "> $opt{xml_tree_filename}" ) 
+        or die "error in img2xml.pl: cannot open $opt{xml_tree_filename}\n";
 	print FH $xml;
 	close( FH );
     }
@@ -161,21 +160,21 @@ if( $opt{nodesc} != 1 )
 {
     for( my $i=0; $i<=$#type_files; $i++ )
     {
-	$type_files[$i] =~ s/\n//;
-	my $type_dir = $type_files[$i];
-	$type_dir =~ s|[^/]*$||;
+        $type_files[$i] =~ s/\n//;
+        my $type_dir = $type_files[$i];
+        $type_dir =~ s|[^/]*$||;
 #    print $type_dir . "\n";
 #if( $type_files[$i] eq "description.txt" )
-	if( $type_dir eq "" ) # top <dir>
-	{
-	    $type_dir = "/";
-	}
-	open( FH, "< $img_dir/$type_files[$i]" ) 
-	    or die "error in img2xml.pl: cannot open $img_dir/$type_files[$i]\n";
-	my @tmp = <FH>;
-	close( FH );
-	$type{$type_dir} = $tmp[0];
-	$type{$type_dir} =~ s/\n//;
+        if( $type_dir eq "" ) # top <dir>
+        {
+            $type_dir = "/";
+        }
+        open( FH, "< $img_dir/$type_files[$i]" ) 
+            or die "error in img2xml.pl: cannot open $img_dir/$type_files[$i]\n";
+        my @tmp = <FH>;
+        close( FH );
+        $type{$type_dir} = $tmp[0];
+        $type{$type_dir} =~ s/\n//;
     }
 }
 
@@ -208,8 +207,8 @@ for( my $i=0; $i<=$#img_files; $i++ )
     $gname_now[0]  = $tmp[0];
     for( my $j=1; $j<=$#tmp-1; $j++ )
     {
-	$gnames_now[$j] = $gnames_now[$j-1] . $tmp[$j] . "/";
-	$gname_now[$j]  = $tmp[$j];
+        $gnames_now[$j] = $gnames_now[$j-1] . $tmp[$j] . "/";
+        $gname_now[$j]  = $tmp[$j];
     }
     my $img_file = $tmp[$#tmp];
     #
@@ -217,22 +216,22 @@ for( my $i=0; $i<=$#img_files; $i++ )
     #
     for( my $j=$#gnames; $j>=0; $j-- )
     {
-	if( "$gnames[$j]" eq "$gnames_now[$j]" ){ last; }
+        if( "$gnames[$j]" eq "$gnames_now[$j]" ){ last; }
 
-	$$xml .= $h_sp2 x @gnames;
-	$$xml .= '</dir>' . $h_ret;
-	pop( @gnames );
-	pop( @gname );
+        $$xml .= $h_sp2 x @gnames;
+        $$xml .= '</dir>' . $h_ret;
+        pop( @gnames );
+        pop( @gname );
     }
     #
     #----- increase @gnames to match @gnames_now
     #
     for( my $j=$#gnames+1; $j<=$#gnames_now; $j++ )
     {
-	push( @gnames, $gnames_now[$j] );
-	push( @gname,  $gname_now[$j] );
-	$$xml .= '  ' x @gnames;
-	$$xml .= '<dir name="' . $gname[$j] . '" child_type="' . $type{$gnames[$j]} . '">' . $h_ret;
+        push( @gnames, $gnames_now[$j] );
+        push( @gname,  $gname_now[$j] );
+        $$xml .= '  ' x @gnames;
+        $$xml .= '<dir name="' . $gname[$j] . '" child_type="' . $type{$gnames[$j]} . '">' . $h_ret;
     }
     #
     #----- output img
