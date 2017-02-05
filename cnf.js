@@ -15,7 +15,7 @@ var xml_tree_filename = 'list.xml';
 //var img_dir           = './test_img';
 //var xml_tree_filename = 'test_list.xml';
 
-// comment out below if you prepare your own in img_dir
+// detailed style
 var xml_type_list_filename = 'usr/default/type.xml';
 var xml_disp_list_filename = 'usr/default/disp.xml';
 var cnf_filename           = '';

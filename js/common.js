@@ -138,13 +138,22 @@ function init()
             }
         }
         //
-        if( sync_panel == 0 ){ $( '#chk_panel_sync' ).prop( 'checked', false ); }
-        else                 { $( '#chk_panel_sync' ).prop( 'checked', true );  }
+        if( $( '#chk_panel_sync' ).length > 0 )
+        {
+            if( sync_panel == 0 ){ $( '#chk_panel_sync' ).prop( 'checked', false ); }
+            else                 { $( '#chk_panel_sync' ).prop( 'checked', true );  }
+        }
         changeSyncPanel();
-        if( controller == 0 ){ $( '#chk_controller' ).prop( 'checked', false ); }
-        else                 { $( '#chk_controller' ).prop( 'checked', true );  }
-        if( panel_flex == 0 ){ $( '#chk_flex' ).prop( 'checked', false ); }
-        else                 { $( '#chk_flex' ).prop( 'checked', true ); }
+        if( $( '#chk_controller' ).length > 0 )
+        {
+            if( controller == 0 ){ $( '#chk_controller' ).prop( 'checked', false ); }
+            else                 { $( '#chk_controller' ).prop( 'checked', true );  }
+        }
+        if( $( '#chk_flex' ).length > 0 )
+        {
+            if( panel_flex == 0 ){ $( '#chk_flex' ).prop( 'checked', false ); }
+            else                 { $( '#chk_flex' ).prop( 'checked', true ); }
+        }
         //
         if( disp_nx == -1 || disp_ny == -1 )
         {
@@ -918,14 +927,21 @@ function init()
     // just for one time
     function registerStaticEvents()
     {
-        $( '#chk_flex' ).off( 'change' );
-        $( '#chk_flex' ).on(  'change', onChangeFlexiblePanel );
-
-        $( '#chk_panel_sync' ).off( 'change' );
-        $( '#chk_panel_sync' ).on(  'change', onChangeSyncPanel );
-
-        $( '#chk_controller' ).off( 'change' );
-        $( '#chk_controller' ).on(  'change', onChangeController );
+        if( $( '#chk_flex' ).length > 0 )
+        {
+            $( '#chk_flex' ).off( 'change' );
+            $( '#chk_flex' ).on(  'change', onChangeFlexiblePanel );
+        }
+        if( $( '#chk_panel_sync' ).length > 0 )
+        {
+            $( '#chk_panel_sync' ).off( 'change' );
+            $( '#chk_panel_sync' ).on(  'change', onChangeSyncPanel );
+        }
+        if( $( '#chk_controller' ).length > 0 )
+        {
+            $( '#chk_controller' ).off( 'change' );
+            $( '#chk_controller' ).on(  'change', onChangeController );
+        }
     }
 
     function onChangeSharedSelects()
@@ -994,14 +1010,14 @@ function init()
         if( sync_panel == 1 )
         {
             if( debug > 0 ){ console.log( 'panel sync on' ); }
-            $( '#div_shared_selects' ).css( "height", "55px" );
-            $( '#div_panel' ).css( "top", "55px" );
+            $( '#div_shared_selects' ).css( 'height', '55px' );
+            $( '#div_panel' ).css( 'top', '55px' );
         }
         else
         {
             if( debug > 0 ){ console.log( 'panel sync off' ); }
-            $( '#div_shared_selects' ).css( "height", "0px" );
-            $( '#div_panel' ).css( "top", "0px" );
+            $( '#div_shared_selects' ).css( 'height', '0px' );
+            $( '#div_panel' ).css( 'top', '0px' );
         }
         panel_height = Number( document.getElementById( 'div_panel' ).clientHeight ) - 10;
         var pheight= panel_height / disp_ny - 2 * cpanel_padding - cpanel_margin_for_border;
@@ -1009,8 +1025,8 @@ function init()
         {
             var cy = Math.floor( c / disp_nx );
             var top  = cy * panel_height / disp_ny;
-            $( '#div_panel-' + c ).css( "height", pheight + "px" );
-            $( '#div_panel-' + c ).css( "top", top + "px" );
+            $( '#div_panel-' + c ).css( 'height', pheight + 'px' );
+            $( '#div_panel-' + c ).css( 'top', top + 'px' );
         }
     }
     function onChangeSyncPanel()
