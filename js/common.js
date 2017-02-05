@@ -5,10 +5,6 @@
 //
 //---------------------------------------------------------------------------//
 //
-// debug: set >1 when debugging
-if( typeof(debug) == 'undefined' )
-  var debug = 0;
-//
 // top directory of image files
 if( typeof(img_dir) == 'undefined' )
   var img_dir = './img';
@@ -24,19 +20,31 @@ if( typeof(xml_type_list_filename) == 'undefined' )
 if( typeof(xml_disp_list_filename) == 'undefined' )
   var xml_disp_list_filename  = img_dir + '/disp.xml';
 
-// number of panels used only for calculating width and height of panels
+// maximum number of panels for horizontal and vertical direction
 // -1: auto
-var disp_nx = -1, disp_ny = -1;
-//var disp_ny = 2;
+if( typeof(disp_nx) == 'undefined' )
+  var disp_nx = -1;
+if( typeof(disp_ny) == 'undefined' )
+  var disp_ny = -1;
 
 // whether or not to show sync panel
-var sync_panel = 1;
+if( typeof(sync_panel) == 'undefined' )
+    var sync_panel = 0;
 
 // whether or not to show controller
-var controller = 1;
+if( typeof(controller) == 'undefined' )
+    var controller = 1;
 
-// whether or not to show controller
-var panel_flex = 0;
+// whether or not to make panel flexible
+if( typeof(panel_flex) == 'undefined' )
+    var panel_flex = 0;
+
+// debug: set >1 when debugging
+if( typeof(debug) == 'undefined' )
+  var debug = 0;
+//
+
+
 
 //---------------------------------------------------------------------------//
 //
@@ -119,23 +127,24 @@ function init()
             else if( key == 'sync_panel' ) // 0 or 1
             {
                 sync_panel = value;
-                if( sync_panel == 0 ){ $( '#chk_panel_sync' ).prop( 'checked', false ); }
-                else                 { $( '#chk_panel_sync' ).prop( 'checked', true );  }
-                changeSyncPanel();
             }
             else if( key == 'controller' ) // 0 or 1
             {
                 controller = value;
-                if( controller == 0 ){ $( '#chk_controller' ).prop( 'checked', false ); }
-                else                 { $( '#chk_controller' ).prop( 'checked', true );  }
             }
             else if( key == 'panel_flex' ) // 0 or 1
             {
                 panel_flex = value;
-                if( panel_flex == 0 ){ $( '#chk_flex' ).prop( 'checked', false ); }
-                else                 { $( '#chk_flex' ).prop( 'checked', true ); }
             }
         }
+        //
+        if( sync_panel == 0 ){ $( '#chk_panel_sync' ).prop( 'checked', false ); }
+        else                 { $( '#chk_panel_sync' ).prop( 'checked', true );  }
+        changeSyncPanel();
+        if( controller == 0 ){ $( '#chk_controller' ).prop( 'checked', false ); }
+        else                 { $( '#chk_controller' ).prop( 'checked', true );  }
+        if( panel_flex == 0 ){ $( '#chk_flex' ).prop( 'checked', false ); }
+        else                 { $( '#chk_flex' ).prop( 'checked', true ); }
         //
         if( disp_nx == -1 || disp_ny == -1 )
         {
