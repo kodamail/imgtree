@@ -1,13 +1,13 @@
 ================================================================================
 1. Introduction
 
-"imgtree" is a tool to view image files using web browser. It keeps directory structure containing original image files. Therefore, you can easily browse tons of image files that are systematically stored in the directory tree. Source codes are written in javascript, html5, and perl.
+"imgtree" is a tool to view image files using web browser. A structure of directories containing image files is kept, so users can easily browse tons of image files that are systematically stored in the directory tree. Source codes are written in javascript, html5 and perl.
 
-  Brief description of install processes is as follows:
+Brief procedures to get started are as follows:
 
-(1) Create/copy image files.
-(2) Transfer image files to the local PC, server, etc (if necessary).
-(3) Make index file for the images (perl is necessary).
+(1) Create image files.
+(2) Copy image files to the local PC, server, etc (if necessary).
+(3) Make xml database for the images (perl is necessary).
 
 (2) and (3) can be reversed depending on the availability of Perl.
 
@@ -15,8 +15,8 @@
 ================================================================================
 2. Files in imgtree
 
-index_*.html
-  Sample html files for browsing. You can use index_default.html as is.
+sample_*.html
+  Sample html files for browsing. You can use sample_default.html as it is.
 
 cnf.gs
   Configurations.
@@ -34,7 +34,7 @@ js/
 ================================================================================
 3. Install
 
-First, think of your situation to use imgtree. For example,
+Belows are examples of using imgtree:
 
 (A) Create image files on a workstation and put image files on a public server for browsing.
 
@@ -42,26 +42,29 @@ First, think of your situation to use imgtree. For example,
 
 (C) Create image files and browse them on a local PC.
 
-Here, we define the term "FIG-SERVER" and "BRO-SERVER" as the servers on which images are created and browsed, respectively. Note that, in the case (C), FIG-SERVER is equivalent to BRO-SERVER, and data transfer processes should be skipped.
+Here, we define terms "FIG-SERVER" and "BRO-SERVER" as servers on which images are created and browsed, respectively. In the case (C), FIG-SERVER is equivalent to BRO-SERVER and copying data should be omitted.
 
-Create working directory such as myimgtree/ and copy imgtree to it.
- $ mkdir myimgtree
- $ cd myimgtree
- $ cp -r ${imgtree}/* ./
- (assume ${imgtree} be a directory name of imgtree.)
+Unzip imgtree and rename it as you like.
+ (let ${imgtree} be a directory name for imgtree.)
+ $ unzip release-20XXXXXX.zip
+ $ mv imgtree-release-XXXXXXXX ${imgtree}
+ $ cd ${imgtree}
 
-Next, make directory for image files in myimgtree/ and create or copy images.
- $ mkdir img
+Make directory for image files in ${imgtree} and create or copy images.
+ $ mkdir img  (<- by default)
  $ (create or copy figures to img/)
 
-After you prepare the images, set img_dir in cnf.js to the image directory. For example,
+Set img_dir in cnf.js to the image directory. For example,
   var img_dir = './img';
 
-Then execute img2xml.cgi to create index file written in xml format.
- $ ./img2xml.cgi
-Please check that list.xml is created in the parent directory of img_dir.
+After these, execute img2xml.cgi to create database file (in xml format).
+ $ perl ./img2xml.cgi
+Please check that list.xml is created in ${imgtree}.
 
-Finally, copy all the files in myimgtree/ to BRO-SERVER and see index.html. Browse index_default.html to check.
+Rename default html file.
+$ mv sample_default.html index.html
+
+Copy all the files in ${imgtree} to BRO-SERVER and see index.html. Browse index_default.html to check.
 
 Tips: img2xml.cgi can be run on BRO-SERVER instead of FIG-SERVER. If BRO-SERVER is a webserver, running img2xml.cgi on BRO-SERVER is often easier than on FIG-SERVER. Note that img2xml.cgi can be also run on CGI mode if BRO-SERVER permit CGI execution.
 
