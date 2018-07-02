@@ -45,6 +45,17 @@ if( typeof(debug) == 'undefined' )
 //
 
 
+// callback function for a specified count
+// ref: https://blog.44uk.net/2013/12/07/multiple-img-onload/
+var Loader = function( expectedCnt, callback )
+{
+    var cnt = 0;
+    //console.log("cnt=" + cnt + " / " + expectedCnt);
+    return function()
+    {
+        if( ++cnt == expectedCnt ){ callback(); }
+    }
+};
 
 //---------------------------------------------------------------------------//
 //
@@ -91,6 +102,10 @@ function init()
     // padding and margin for child panel
     var cpanel_padding = 3;
     var cpanel_margin_for_border = 8;
+
+    var files_height = [];
+    var files_width = [];
+
     //
     // set initial value (from url)
     var path_init;
@@ -855,15 +870,40 @@ function init()
         if( c != undefined ){ cmin = c; cmax = c;}
         var i;
         var file;
+
+	var cfmax = 0;
+        for( c=cmin; c<=cmax; c++ ){ cfmax += fnames[c].length; }
+
+        // executed after loading all the images
+        var loader = Loader( cfmax, function()
+        {
+            console.log( "All images loaded!" );
+            for( c=cmin; c<=cmax; c++ )
+            {
+                var path_str = img_dir;
+                if( path_str !== '' ){ path_str = path_str + '/'; }
+                for( i=1; i<path[c].length; i++ ){ path_str += path[c][i] + '/'; }
+
+                changeSize(c);
+
+                for( i=0; i<fnames[c].length; i++ )
+                {
+                    var id = 'img-' + c + '-' + i;
+                    file = path_str + fnames[c][i];
+		    //console.log( id );
+                    document.getElementById(id).style.setProperty( 'visibility', 'visible' );
+		    files_height[file] = document.getElementById(id).height; // save
+		    files_width[file]  = document.getElementById(id).width;
+		    //console.log( file + " : " + files_height[file] );
+                }                
+            }
+        });
+
         for( c=cmin; c<=cmax; c++ )
         {
             var path_str = img_dir;
             if( path_str !== '' ){ path_str = path_str + '/'; }
-
-            for( i=1; i<path[c].length; i++ )
-            {
-                path_str += path[c][i] + '/';
-            }
+            for( i=1; i<path[c].length; i++ ){ path_str += path[c][i] + '/'; }
 
             $( '#div_imgs-' + c ).html( '' );
             for( i=0; i<fnames[c].length; i++ )
@@ -875,17 +915,33 @@ function init()
                     $( '#div_imgs-' + c).append( i + ': ' + file + ', <br>' );
                 }
                 var id = 'img-' + c + '-' + i;
-                $( '#div_imgs-' + c ).append( '<img id="' + id + '" src="./' + file + '" style="visibility: hidden;">' );
+//                $( '#div_imgs-' + c ).append( '<img id="' + id + '" src="./' + file + '" style="visibility: hidden;">' );
+                if( files_height[file] == undefined || files_width[file] == undefined )
+                {
+                    $( '#div_imgs-' + c ).append( '<img id="' + id + '" src="./' + file + '" style="visibility: hidden;">' );
+                }
+                else
+                {
+		    //console.log( "height: " + files_height[file] + " width: " + files_width[file] );
+                    $( '#div_imgs-' + c ).append( '<img id="' + id + '" src="./' + file + '" style="visibility: visible;" height=' + files_height[file] + ' width=' + files_width[file] + '>' );
+                }
+/*
                 $( '#' + id ).one( 'load', function () // width can be obtained after loading
                 {
+		    //num_loaded++;
                     var changeId = $(this).attr( 'id' ).split( '-' );  // select-c-i
                     var c = changeId[1];
                     var i = changeId[2];
                     var id = 'img-' + c + '-' + i;
+		    //console.log( id + " : " + num_loaded);
                     changeSize(c);
                     document.getElementById(id).style.setProperty( 'visibility', 'visible' );
                 });
+*/
+		$( '#' + id ).one( 'load', loader );
+
             }
+
         }
     }
 
