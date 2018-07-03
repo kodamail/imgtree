@@ -20,6 +20,7 @@
 <disp type="varid" size="20" loop="group">
   <button inc="-1">&lt;</button>
   <menu></menu>
+  <anim inc="+1">P</anim>
   <button inc="+1">&gt;</button>
 </disp>
 

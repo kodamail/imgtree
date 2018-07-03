@@ -706,6 +706,22 @@ function init()
                         onShiftMenu 
                     );
                 } // end of type_button()
+                function type_anim( attr_type, text, inc, group_type, loop )
+                {
+                    var id = 'form-' + c + '-' + id_num;
+                    id_num++;
+                    $( '#form_controller-' + c ).append( '<input id="' + id + '" class="shift" type="button" value="' + text + '">' );
+                    $( '#' + id ).bind( 'click', 
+                        {
+                            c   : c,
+                            i   : i_type[attr_type], // target type for button
+                            inc : inc,
+                            type: group_type,        // type(s) for a group
+                            loop: loop
+                        },
+                        onClickAnim
+                    );
+                } // end of type_button()
                 //
                 // insert/don't insert "<br>" by checking size
                 //   if <disp type="default"> exists
@@ -743,6 +759,12 @@ function init()
                         if( $(this)[0].tagName === 'button' ) // <button>
                         {
                             type_button( attr_type, $(this).text(), $(this).attr( 'inc' ), disp.attr( 'type' ), disp.attr( 'loop' ) );
+                            nothing_to_do = 0;
+                        }
+                        //
+                        else if( $(this)[0].tagName === 'anim' ) // <anim>
+                        {
+                            type_anim( attr_type, $(this).text(), $(this).attr( 'inc' ), disp.attr( 'type' ), disp.attr( 'loop' ) );
                             nothing_to_do = 0;
                         }
                         //
@@ -998,6 +1020,11 @@ function init()
             $( '#chk_controller' ).off( 'change' );
             $( '#chk_controller' ).on(  'change', onChangeController );
         }
+
+        $( '#button_anim_stop' ).on(  'click', function()
+        {
+	    timer_anim = -1;
+        });
     }
 
     function onChangeSharedSelects()
@@ -1306,6 +1333,25 @@ function init()
                 break;
             }
         }
+    }
+
+    var timer_anim = -1;
+    function onClickAnim( eo )
+    {
+	if( timer_anim != -1 )
+        {
+            clearTimeout(timer_anim);
+	    timer_anim = -1;
+        }
+	else{ anim( eo ); }
+    }
+    function anim( eo )
+    {
+	onShiftMenu( eo );
+	timer_anim = setTimeout( function(a)
+        {
+            if( timer_anim != -1 ){ anim( a ); }
+        }, 300, eo );
     }
 
     function onShiftMenu( eo )
