@@ -20,44 +20,53 @@
 <disp type="varid" size="20" loop="group">
   <button inc="-1">&lt;</button>
   <menu></menu>
-  <anim inc="+1">P</anim>
   <button inc="+1">&gt;</button>
 </disp>
 
 <disp type="year/season" size="50" loop="ingroup">
+  <anim type="season" inc="-1">&lt;A</anim>
   <button type="year"   inc="-1">y-1</button>
   <button type="season" inc="-1">s-1</button>
   <menu type="year"></menu>
   <menu type="season"></menu>
   <button type="season" inc="+1">s+1</button>
   <button type="year"   inc="+1">y+1</button>
+  <anim type="season" inc="+1">A&gt;</anim>
 </disp>
 
 <disp type="year/month" size="50" loop="ingroup">
+  <anim type="season" inc="-1">&lt;A</anim>
   <button type="year"  inc="-1">y-1</button>
   <button type="month" inc="-1">m-1</button>
   <menu type="year"></menu>
   <menu type="month"></menu>
   <button type="month" inc="+1">m+1</button>
   <button type="year"  inc="+1">y+1</button>
+  <anim type="season" inc="+1">A&gt;</anim>
 </disp>
 
 <disp type="year" size="20">
+  <anim type="season" inc="-1">&lt;A</anim>
   <button inc="-1">y-1</button>
   <menu></menu>
   <button inc="+1">y+1</button>
+  <anim type="season" inc="+1">A&gt;</anim>
 </disp>
 
 <disp type="season" size="20">
+  <anim type="season" inc="-1">&lt;A</anim>
   <button inc="-1">s-1</button>
   <menu></menu>
   <button inc="+1">s+1</button>
+  <anim type="season" inc="+1">A&gt;</anim>
 </disp>
 
 <disp type="month" size="15">
+  <anim type="season" inc="-1">&lt;A</anim>
   <button inc="-1">m-1</button>
   <menu></menu>
   <button inc="+1">m+1</button>
+  <anim type="season" inc="+1">A&gt;</anim>
 </disp>
 
 </disp_list>

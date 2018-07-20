@@ -105,7 +105,11 @@ function init()
 
     var files_height = [];
     var files_width = [];
+    var scales = [];
 
+    var timer_anim = -1;
+    var timer_time = 300  // default, in ms
+    var flag_anim = -1  // 1: anim is working  -1: anim is stopped
     //
     // set initial value (from url)
     var path_init;
@@ -635,7 +639,7 @@ function init()
         }
         else // disabled button
         {
-            $( '#form_controller-' + c).append( '<input id="conmm-' + c + '" class="conmm" type="button" value="-" disabled>' );
+            $( '#form_controller-' + c ).append( '<input id="conmm-' + c + '" class="conmm" type="button" value="-" disabled>' );
         }
         $( '#form_controller-' + c ).append( '<input id="conpp-' + cpp + '" class="conpp" type="button" value="+">' );
         //
@@ -914,8 +918,10 @@ function init()
                     file = path_str + fnames[c][i];
 		    //console.log( id );
                     document.getElementById(id).style.setProperty( 'visibility', 'visible' );
-		    files_height[file] = document.getElementById(id).height; // save
-		    files_width[file]  = document.getElementById(id).width;
+//		    files_height[file] = document.getElementById(id).height; // save
+//		    files_width[file]  = document.getElementById(id).width;
+		    files_height[file] = document.getElementById(id).naturalHeight;
+		    files_width[file]  = document.getElementById(id).naturalWidth;
 		    //console.log( file + " : " + files_height[file] );
                 }                
             }
@@ -934,18 +940,22 @@ function init()
 
                 if( debug > 1 )
                 {
-                    $( '#div_imgs-' + c).append( i + ': ' + file + ', <br>' );
+                    $( '#div_imgs-' + c ).append( i + ': ' + file + ', <br>' );
                 }
                 var id = 'img-' + c + '-' + i;
 //                $( '#div_imgs-' + c ).append( '<img id="' + id + '" src="./' + file + '" style="visibility: hidden;">' );
-                if( files_height[file] == undefined || files_width[file] == undefined )
+                if( files_height[file] == undefined || files_width[file] == undefined || scales[c] == undefined )
                 {
                     $( '#div_imgs-' + c ).append( '<img id="' + id + '" src="./' + file + '" style="visibility: hidden;">' );
                 }
                 else
                 {
 		    //console.log( "height: " + files_height[file] + " width: " + files_width[file] );
-                    $( '#div_imgs-' + c ).append( '<img id="' + id + '" src="./' + file + '" style="visibility: visible;" height=' + files_height[file] + ' width=' + files_width[file] + '>' );
+//                    $( '#div_imgs-' + c ).append( '<img id="' + id + '" src="./' + file + '" style="visibility: visible;" height=' + files_height[file] + ' width=' + files_width[file] + '>' );
+		    // assume scale is same as the previous one.
+		    var height = scales[c] * files_height[file];
+		    var width  = scales[c] * files_width[file];
+                    $( '#div_imgs-' + c ).append( '<img id="' + id + '" src="./' + file + '" style="visibility: visible;" height=' + height+ ' width=' + width + '>' );
                 }
 /*
                 $( '#' + id ).one( 'load', function () // width can be obtained after loading
@@ -1021,10 +1031,14 @@ function init()
             $( '#chk_controller' ).on(  'change', onChangeController );
         }
 
-        $( '#button_anim_stop' ).on(  'click', function()
+        if( $( '#button_anim_stop' ).length > 0 )
         {
-	    timer_anim = -1;
-        });
+            $( '#button_anim_stop' ).off( 'click' );
+            $( '#button_anim_stop' ).on(  'click', function()
+            {
+	        timer_anim = -1;
+            });
+        }
     }
 
     function onChangeSharedSelects()
@@ -1230,34 +1244,6 @@ function init()
         path2panels( 0 );
     }
 
-/*
-    function onMagnifySize()
-    {
-        var c = parseInt( $(this).attr("id").split("-")[1] );
-        zoom_fnames[c] += 0.125;
-        var id_parent = "img-" + c;
-        var panel_width = panel_width_default * zoom_fnames[c];
-        document.getElementById( 'div_panel-' + c ).style.setProperty( "width", panel_width + "%" );
-        for( var i=0; i<fnames[c].length; i++ )
-        {
-            var id = id_parent + "-" + i
-            document.getElementById(id).width = document.getElementById( 'div_panel-' + c ).clientWidth;
-        }
-    }
-    function onReduceSize()
-    {
-        var c = parseInt( $(this).attr("id").split("-")[1] );
-        zoom_fnames[c] -= 0.125;
-        var id_parent = "img-" + c;
-        var panel_width = panel_width_default * zoom_fnames[c];
-        document.getElementById( 'div_panel-' + c ).style.setProperty( "width", panel_width + "%" );
-        for( var i=0; i<fnames[c].length; i++ )
-        {
-            var id = id_parent + "-" + i
-            document.getElementById(id).width = document.getElementById( 'div_panel-' + c ).clientWidth;
-        }
-    }
-*/
     function onResize(e)
     {
         var c = parseInt( e.target.id.split("-")[1] );
@@ -1289,28 +1275,15 @@ function init()
             if( max_height < height ){ max_height = height; }
         }
         var ar = ( max_height * disp_img_ny ) / ( max_width * disp_img_nx );
-        if( ar < panel_height / panel_width ){ scale = panel_width / max_width / disp_img_nx; }
-        else{ scale = panel_height / max_height / disp_img_ny; }
-//        var ar = max_height / max_width;
-//        if( ar < panel_height / panel_width ){ scale = panel_width / max_width; }
-//        else{ scale = panel_height / max_height; }
+        if( ar < panel_height / panel_width ){ scales[c] = panel_width / max_width / disp_img_nx; }
+        else{ scales[c] = panel_height / max_height / disp_img_ny; }
         for( var i=0; i<fnames[c].length; i++ )
         {
             var id = id_parent + "-" + i;
-            var width  = document.getElementById(id).naturalWidth  * scale;
-            var height = document.getElementById(id).naturalHeight * scale;
+            var width  = document.getElementById(id).naturalWidth  * scales[c];
+            var height = document.getElementById(id).naturalHeight * scales[c];
             document.getElementById(id).height = height;
             document.getElementById(id).width  = width;
-/*
-            var ar = document.getElementById(id).naturalHeight / document.getElementById(id).naturalWidth;
-            var height = panel_height
-            var width  = panel_height / ar;
-            if( ar < panel_height / panel_width )
-            {
-                height = panel_width * ar
-                width  = panel_width;
-            }
-*/
         }
     }
 
@@ -1333,25 +1306,6 @@ function init()
                 break;
             }
         }
-    }
-
-    var timer_anim = -1;
-    function onClickAnim( eo )
-    {
-	if( timer_anim != -1 )
-        {
-            clearTimeout(timer_anim);
-	    timer_anim = -1;
-        }
-	else{ anim( eo ); }
-    }
-    function anim( eo )
-    {
-	onShiftMenu( eo );
-	timer_anim = setTimeout( function(a)
-        {
-            if( timer_anim != -1 ){ anim( a ); }
-        }, 300, eo );
     }
 
     function onShiftMenu( eo )
@@ -1429,7 +1383,37 @@ function init()
 
             if( inc != 0 ){ shiftMenu( d, inc ); }
         }
-        shiftMenu( 0, inc );
+	var ret = shiftMenu( 0, inc );
         path2panels( 0, c );
+	return ret;
     }
+
+    function onClickAnim( eo )
+    {
+	if( $( '#number_anim_ms' ).length > 0 )
+        {
+	    timer_time = $( '#number_anim_ms' ).attr( 'value' );
+        }
+	if( timer_anim != -1 )  // stop animation
+        {
+            clearTimeout(timer_anim);
+	    timer_anim = -1;
+	    flag_anim = -1;
+        }
+	else
+        {
+	    flag_anim = 1;
+            anim( eo );
+        }
+    }
+    function anim( eo )
+    {
+	var flag = onShiftMenu( eo );
+	if( flag < 0 ){ flag_anim = -1; timer_anim = -1; return -1;}
+	timer_anim = setTimeout( function(a)
+        {
+            if( timer_anim != -1 ){ anim( a ); }
+        }, timer_time, eo );
+    }
+
 }
